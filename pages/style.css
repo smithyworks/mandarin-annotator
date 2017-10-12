@@ -9,7 +9,9 @@ span.traditional {
 body {
   padding: 100px 200px;
 }
-
+@media screen and (max-width: 1000px) {
+  body { padding: 10px 10px; }
+}
 body * {
   font-family: Georgia;
   font-size: 35px;
