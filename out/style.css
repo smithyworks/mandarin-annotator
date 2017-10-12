@@ -1,0 +1,87 @@
+/*span.simplified {
+    font-family: Helvetica, Arial, "微软雅黑", "正黑体", SimHei, SimSun, "Pingfang SC", "Heiti SC", STHeiti, STSong, Hei, "Droid Sans Fallback", "Arial Unicode MS", "隶书", "宋体", "WenQuanYi Micro Hei", "文泉驿微米黑", "AR PL UKai CN";
+}
+
+span.traditional {
+    font-family: Helvetica, Arial, "微软雅黑", "正黑体", SimHei, SimSun, "Pingfang TC","Heiti TC", "LiSong Hei", "Droid Sans Fallback", PMingLiU, MingLiU, "新细明体", "细明体", "WenQuanYi Micro Hei", "文泉驿微米黑", "AR PL UKai TW MBE";
+}*/
+
+body {
+  padding: 100px 200px;
+}
+
+body * {
+  font-family: Georgia;
+  font-size: 35px;
+}
+
+body * {
+  font-family: Georgia, "Times New Roman", "KaiTi", "楷体", STKaiti, "华文楷体", serif;
+}
+span.simplified {
+  font-size: 35px;
+}
+p.a { text-align: center; }
+p.a span {
+  font-size: 55px;
+  font-weight: bold;
+}
+p.b span {
+  font-size: 45px;
+  font-weight: bold;
+}
+p.c span {
+  font-size: 40px;
+  font-weight: bold;
+}
+p.d span {
+  font-size: 35px;
+  font-weight: bold;
+}
+
+span.simplified:hover {
+  background-color: lightgrey;
+}
+
+.popover-header, .popover-header * {
+  font-size: 24px;
+}
+
+.popover-body {
+  padding: 0;
+}
+.popover-body * {
+  font-size: 18px;
+}
+.popover-body h5 { font-size: 28px; background-color: lightgrey; padding: 10px; }
+.popover-body h6 { font-style: italic; padding: 0 10px 5px 10px; }
+.popover-body ul { padding: 0 10px 5px 35px; }
+
+.vocab {
+  padding-top: 50px;
+}
+.vocab .word {
+  padding-top: 20px;
+  font-weight: bold;
+  border-top: 1px solid black;
+}
+.vocab .entry {
+  padding-left: 30px;
+}
+.vocab .item {
+  padding-bottom: 20px;
+}
+.vocab .entry * {
+  font-size: 27px;
+}
+.vocab .pinyin {
+  font-style: italic;
+  font-weight: bold;
+  font-size: 25px;
+  padding-right: 20px;
+}
+
+body h4 {
+  display: inline-block;
+  font-size: 20px;
+}
