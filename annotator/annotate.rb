@@ -99,11 +99,11 @@ class Annotator
   end
 
   def htmlBegin
-    '<html><head><link rel="stylesheet" href="bootstrap.min.css"><link rel="stylesheet" type="text/css" href="style.css"></head><body>'
+    '<html><head><link rel="stylesheet" href="pages/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="pages/style.css"></head><body>'
   end
 
   def htmlEnd
-    "<script src=\"jquery-3.2.1.slim.min.js\"></script><script src=\"popper.min.js\"></script><script src=\"bootstrap.min.js\"></script><script type=\"text/javascript\">$(function () {$('[data-toggle=\"tooltip\"]').tooltip()})\n$(function () {$('[data-toggle=\"popover\"]').popover()})</script></body></html>"
+    "<script src=\"pages/jquery-3.2.1.slim.min.js\"></script><script src=\"pages/popper.min.js\"></script><script src=\"pages/bootstrap.min.js\"></script><script type=\"text/javascript\">$(function () {$('[data-toggle=\"tooltip\"]').tooltip()})\n$(function () {$('[data-toggle=\"popover\"]').popover()})</script></body></html>"
   end
 
   def entryHtml(word, entry)
