@@ -99,11 +99,11 @@ class Annotator
   end
 
   def htmlBegin
-    '<html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"><link rel="stylesheet" href="pages/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="pages/style.css"></head><body>'
+    '<html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"><link rel="stylesheet" href="bootstrap.min.css"><link rel="stylesheet" type="text/css" href="style.css"></head><body><a href="/">Home</a>'
   end
 
   def htmlEnd
-    "<script src=\"pages/jquery-3.2.1.slim.min.js\"></script><script src=\"pages/popper.min.js\"></script><script src=\"pages/bootstrap.min.js\"></script><script type=\"text/javascript\">$(function () {$('[data-toggle=\"tooltip\"]').tooltip()})\n$(function () {$('[data-toggle=\"popover\"]').popover()})</script></body></html>"
+    "<script src=\"jquery-3.2.1.slim.min.js\"></script><script src=\"popper.min.js\"></script><script src=\"bootstrap.min.js\"></script><script type=\"text/javascript\">$(function () {$('[data-toggle=\"tooltip\"]').tooltip()})\n$(function () {$('[data-toggle=\"popover\"]').popover()})</script></body></html>"
   end
 
   def entryHtml(word, entry)
@@ -208,125 +208,8 @@ class Annotator
 end
 
 a = Annotator.new
-a.annotate(ARGV.first)
+files = Dir["texts/*.txt"]
 
-
-# puts "Loading dictionary..."
-# dict = {}
-# File.open("data/cedict.u8", "r") do |d|
-#   counts = {}
-#   while line = d.gets
-#     line.strip!
-#     next if line == '' or line.start_with?("#")
-#
-#     tokens = line.split(' ')
-#
-#     trad = tokens.first
-#     simp = tokens[1]
-#
-#     uni = "，"
-#     pinyin_raw = line.match(/\[[a-zA-Z0-9[:punct:] ]*?\]/).to_s
-#     pinyin = PinyinToneConverter.number_to_utf8(pinyin_raw[1..-2])
-#
-#     defi_raw = line.match(/\/.*\//).to_s
-#     defi = defi_raw[1..-2].split("/")
-#
-#     if dict[simp.length].nil?
-#       dict[simp.length] = {}
-#     else
-#       if dict[simp.length][simp].nil?
-#         dict[simp.length][simp] = [{
-#           trad: trad,
-#           pinyin: pinyin,
-#           defi: defi
-#         }]
-#       else
-#         dict[simp.length][simp] << {
-#           trad: trad,
-#           pinyin: pinyin,
-#           defi: defi
-#         }
-#       end
-#     end
-#
-#     if counts[tokens.first.size].nil?
-#      counts[tokens.first.size] = 1
-#    else
-#      counts[tokens.first.size] += 1
-#    end
-#
-#   end
-#   puts counts.inspect
-# end
-#
-# puts "Annotating document..."
-# File.open("out/out.txt", "r") do |f|
-#   File.open("out/out.html", "w") do |o|
-#     o.puts '<html><head>'
-#     o.puts '<link rel="stylesheet" href="bootstrap.min.css">'
-#     o.puts '<link rel="stylesheet" type="text/css" href="style.css">'
-#     o.puts '</head><body>'
-#
-#     while line = f.gets
-#       tokens = line.split(' ')
-#
-#       if tokens.size > 0
-#         o.print "<p>"
-#
-#         tokens.each do |t|
-#           entries = dict[t.length][t] rescue nil
-#
-#           if !entries.nil?
-#             pinyin_set = Set.new
-#             defi_set = Set.new
-#             entries.each do |e|
-#               pinyin_set.add e[:pinyin]
-#               defi_set.add e[:defi].map{|i| "<li>#{i}</li>"}.join('')
-#             end
-#             pinyin_string = pinyin_set.to_a.join(" | ")
-#             defi_string = defi_set.to_a.join('').gsub('"', '')
-#
-#             o.print "<span class=\"simplified\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"hover\" title=\"#{pinyin_string}\" data-delay=\"300\" data-placement=\"bottom\" data-content=\"<ul>#{defi_string}</ul>\">#{t}</span>"
-#             # o.print "<span class=\"simplified\" delay=\"1000\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"#{pinyin_string}\">#{t}</span></span>"
-#           else
-#             puts "Split #{t}"
-#             chars = t.split ''
-#             puts chars.inspect
-#             chars.each do |c|
-#               entries2 = dict[c.length][c] rescue nil
-#
-#               if !entries2.nil?
-#                 pinyin_set = Set.new
-#                 defi_set = Set.new
-#                 entries2.each do |e2|
-#                   pinyin_set.add e2[:pinyin]
-#                   defi_set.add e2[:defi].map{|i| "<li>#{i}</li>"}.join('')
-#                 end
-#                 pinyin_string = pinyin_set.to_a.join(" | ")
-#                 defi_string = defi_set.to_a.join('').gsub('"', '')
-#
-#                 o.print "<span class=\"simplified\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"hover\" title=\"#{pinyin_string}\" data-delay=\"300\" data-placement=\"bottom\" data-content=\"#{defi_string}\">#{c}</span>"
-#                 # o.print "<span class=\"simplified\" delay=\"0\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"#{pinyin_string}\">#{c}</span>"
-#               else
-#                 o.print c
-#               end
-#             end
-#           end
-#         end
-#
-#         o.puts "</p>"
-#       end
-#     end
-#
-#     o.puts '<script src="jquery-3.2.1.slim.min.js"></script>'
-#     o.puts '<script src="popper.min.js"></script>'
-#     o.puts '<script src="bootstrap.min.js"></script>'
-#     o.puts '<script type="text/javascript">'
-#     o.puts '$(function () {$(\'[data-toggle="tooltip"]\').tooltip()})'
-#     o.puts '$(function () {$(\'[data-toggle="popover"]\').popover()})'
-#     o.puts '</script>'
-#
-#     o.puts "</body></html>"
-#   end
-# end
-# puts "Done!"
+files.each do |f|
+  a.annotate(f)
+end
