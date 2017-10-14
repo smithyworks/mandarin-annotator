@@ -1,8 +1,15 @@
 # mandarin-annotator
 
-This project uses the 'Pinyin Tone Converter' written by Douglas Triggs (https://github.com/doubt72/pinyin-tone-converter)
-
 The annotator.rb file intakes an already segmented mandarin text and outputs and html version with dictionary annotations.
+
+## Libraries used
+
+This project uses:
+
+- The 'Pinyin Tone Converter' written by Douglas Triggs (https://github.com/doubt72/pinyin-tone-converter).
+- bootstrap (http://getbootstrap.com/).
+- Font Awesome (http://fontawesome.io/).
+- The CC-CEDICT Chinese-English dictionary (https://www.mdbg.net/chinese/dictionary?page=cedict).
 
 ## License
 
