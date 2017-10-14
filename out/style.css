@@ -73,6 +73,9 @@ span.simplified:hover {
 .vocab .item {
   padding-bottom: 20px;
 }
+.vocab .item.hide {
+  display: none;
+}
 .vocab .entry * {
   font-size: 27px;
 }
@@ -86,4 +89,30 @@ span.simplified:hover {
 body h4 {
   display: inline-block;
   font-size: 20px;
+}
+
+.hsk-toggle, .hsk-toggle * {
+  font-size: 20px;
+}
+.hsk-toggle {
+  width: 105px;
+  height: 36px;
+  padding: 2px 7px;
+  display: inline-block;
+  border: 2px solid green;
+  border-radius: 18px;
+  cursor: pointer;
+}
+.hsk-toggle.disabled {
+  border-color: grey;
+  color: grey;
+}
+.hsk-toggle .fa-check {
+  color: green;
+}
+.hsk-toggle .fa-times {
+  color: grey;
+}
+.hsk-toggle .fa {
+  width: 20px;
 }

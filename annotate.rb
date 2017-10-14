@@ -34,7 +34,7 @@ class HSK
     elsif @hsk[6].include?(word)
       6
     else
-      "&infin;"
+      "∞"
     end
   end
 end
@@ -99,11 +99,11 @@ class Annotator
   end
 
   def htmlBegin
-    '<html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"><link rel="stylesheet" href="bootstrap.min.css"><link rel="stylesheet" type="text/css" href="style.css"></head><body><a href="/">Home</a>'
+    '<html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"><link rel="stylesheet" href="bootstrap.min.css"><link rel="stylesheet" type="text/css" href="style.css"><link rel="stylesheet" type="text/css" href="font-awesome-4.7.0/css/font-awesome.min.css"></head><body><a href="/">Home</a>'
   end
 
   def htmlEnd
-    "<script src=\"jquery-3.2.1.slim.min.js\"></script><script src=\"popper.min.js\"></script><script src=\"bootstrap.min.js\"></script><script type=\"text/javascript\">$(function () {$('[data-toggle=\"tooltip\"]').tooltip()})\n$(function () {$('[data-toggle=\"popover\"]').popover()})</script></body></html>"
+    "<script src=\"jquery-3.2.1.slim.min.js\"></script><script src=\"popper.min.js\"></script><script src=\"bootstrap.min.js\"></script><script src=\"script.js\"></script><script type=\"text/javascript\">$(function () {$('[data-toggle=\"tooltip\"]').tooltip()})\n$(function () {$('[data-toggle=\"popover\"]').popover()})</script></body></html>"
   end
 
   def entryHtml(word, entry)
@@ -147,13 +147,21 @@ class Annotator
     list = []
     list << "<div class=\"vocab\">"
 
-    list << "<div class=\"b\">Vocabulary (#{@vocab.size} items)</div>"
+    list << '<div class="b">Vocabulary (<span id="vocab-count"></span> items)</div>'
+    list << '<span id="toggle-1" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 1</span>'
+    list << '<span id="toggle-2" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 2</span>'
+    list << '<span id="toggle-3" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 3</span>'
+    list << '<span id="toggle-4" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 4</span>'
+    list << '<span id="toggle-5" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 5</span>'
+    list << '<span id="toggle-6" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 6</span>'
+    list << '<span id="toggle-0" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK &infin;</span>'
 
     @vocab.each do |word|
       entries = @dict.entries(word)
       entries_strings = entries.map{|e| "<div class=\"entry\"><span class=\"trad\">[#{e[:trad]}]</span> <span class=\"pinyin\">#{e[:pinyin]}</span> <span class=\"defi\">#{e[:defi].join('; ')}</span></div>"}
 
-      list << "<div class=\"item\"><div class=\"word\">#{word} <h4>[HSK #{entries.first[:hsk]}]</h4></div>#{entries_strings.join('')}</div>"
+      hsk = entries.first[:hsk]
+      list << "<div class=\"item hsk#{hsk}\"><div class=\"word\">#{word} <h4>[HSK #{hsk}]</h4></div>#{entries_strings.join('')}</div>"
     end
 
     list << "</div>"
