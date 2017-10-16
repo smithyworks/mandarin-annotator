@@ -170,6 +170,7 @@ class Annotator
   end
 
   def annotate(file)
+    @vocab = Set.new
     File.open(file, "r") do |f|
       File.open("out/#{File.basename(file)}.html", "w") do |o|
         puts "Annotating file 'out/#{File.basename(file)}.html', outputting to '#{file}.html'..."
