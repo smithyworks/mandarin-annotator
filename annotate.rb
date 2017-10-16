@@ -21,17 +21,17 @@ class HSK
   end
 
   def getLevel(word)
-    if @hsk[1].include?(word)
+    if @hsk[1].include?(word) or (word.length == 1 and @hsk[1].any?{|i| i.include?(word)})
       1
-    elsif @hsk[2].include?(word)
+    elsif @hsk[2].include?(word) or (word.length == 1 and @hsk[2].any?{|i| i.include?(word)})
       2
-    elsif @hsk[3].include?(word)
+    elsif @hsk[3].include?(word) or (word.length == 1 and @hsk[3].any?{|i| i.include?(word)})
       3
-    elsif @hsk[4].include?(word)
+    elsif @hsk[4].include?(word) or (word.length == 1 and @hsk[4].any?{|i| i.include?(word)})
       4
-    elsif @hsk[5].include?(word)
+    elsif @hsk[5].include?(word) or (word.length == 1 and @hsk[5].any?{|i| i.include?(word)})
       5
-    elsif @hsk[6].include?(word)
+    elsif @hsk[6].include?(word) or (word.length == 1 and @hsk[6].any?{|i| i.include?(word)}) 
       6
     else
       "∞"
@@ -163,8 +163,8 @@ class Annotator
       entries = @dict.entries(word)
       entries_strings = entries.map{|e| "<div class=\"entry\"><span class=\"trad\">[#{e[:trad]}]</span> <span class=\"pinyin\">#{e[:pinyin]}</span> <span class=\"defi\">#{e[:defi].join('; ')}</span></div>"}
 
-      hsk = entries.first[:hsk] == "∞" ? 0 : entries.first[:hsk]
-      list << "<div class=\"item hsk#{hsk}\"><div class=\"word\">#{word} <h4>[HSK #{hsk}]</h4></div>#{entries_strings.join('')}</div>"
+      hsk = entries.first[:hsk]
+      list << "<div class=\"item hsk#{hsk == "∞" ? 0 : hsk}\"><div class=\"word\">#{word} <h4>[HSK #{hsk}]</h4></div>#{entries_strings.join('')}</div>"
     end
 
     list << "</div>"

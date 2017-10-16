@@ -24,19 +24,19 @@ span.simplified {
   font-size: 35px;
 }
 p.a { text-align: center; }
-p.a span {
+p.a, p.a span {
   font-size: 55px;
   font-weight: bold;
 }
-p.b span {
+p.b, p.b span {
   font-size: 45px;
   font-weight: bold;
 }
-p.c span {
+p.c, p.c span {
   font-size: 40px;
   font-weight: bold;
 }
-p.d span {
+p.d, p.d span {
   font-size: 35px;
   font-weight: bold;
 }
