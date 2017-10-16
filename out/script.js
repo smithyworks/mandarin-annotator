@@ -30,7 +30,7 @@ function countVocab() {
     count += $('.hsk6').length;
   }
   if (hsk0 == true) {
-    count += $('.hsk∞').length;
+    count += $('.hsk0').length;
   }
 
   $('#vocab-count').html(count);
@@ -38,18 +38,26 @@ function countVocab() {
 
 countVocab();
 
+function hideHSKLevel(level) {
+  $('#toggle-' + level).addClass('disabled');
+  $('#toggle-' + level + ' .fa').removeClass('fa-check');
+  $('#toggle-' + level + ' .fa').addClass('fa-times');
+  $('.item.hsk' + level).addClass('hide');
+}
+
+function showHSKLevel(level) {
+  $('#toggle-' + level).removeClass('disabled');
+  $('#toggle-' + level + ' .fa').removeClass('fa-times');
+  $('#toggle-' + level + ' .fa').addClass('fa-check');
+  $('.item.hsk' + level).removeClass('hide');
+}
+
 $('#toggle-1').click(function() {
   if (hsk1 == true) {
-    $('#toggle-1').addClass('disabled');
-    $('#toggle-1 .fa').removeClass('fa-check');
-    $('#toggle-1 .fa').addClass('fa-times');
-    $('.item.hsk1').addClass('hide');
+    hideHSKLevel(1);
     hsk1 = false;
   } else {
-    $('#toggle-1').removeClass('disabled');
-    $('#toggle-1 .fa').removeClass('fa-times');
-    $('#toggle-1 .fa').addClass('fa-check');
-    $('.item.hsk1').removeClass('hide');
+    showHSKLevel(1);
     hsk1 = true;
   }
   countVocab();
@@ -57,16 +65,10 @@ $('#toggle-1').click(function() {
 
 $('#toggle-2').click(function() {
   if (hsk2 == true) {
-    $('#toggle-2').addClass('disabled');
-    $('#toggle-2 .fa').removeClass('fa-check');
-    $('#toggle-2 .fa').addClass('fa-times');
-    $('.item.hsk2').addClass('hide');
+    hideHSKLevel(2);
     hsk2 = false;
   } else {
-    $('#toggle-2').removeClass('disabled');
-    $('#toggle-2 .fa').removeClass('fa-times');
-    $('#toggle-2 .fa').addClass('fa-check');
-    $('.item.hsk2').removeClass('hide');
+    showHSKLevel(2);
     hsk2 = true;
   }
   countVocab();
@@ -74,16 +76,10 @@ $('#toggle-2').click(function() {
 
 $('#toggle-3').click(function() {
   if (hsk3 == true) {
-    $('#toggle-3').addClass('disabled');
-    $('#toggle-3 .fa').removeClass('fa-check');
-    $('#toggle-3 .fa').addClass('fa-times');
-    $('.item.hsk3').addClass('hide');
+    hideHSKLevel(3);
     hsk3 = false;
   } else {
-    $('#toggle-3').removeClass('disabled');
-    $('#toggle-3 .fa').removeClass('fa-times');
-    $('#toggle-3 .fa').addClass('fa-check');
-    $('.item.hsk3').removeClass('hide');
+    showHSKLevel(3);
     hsk3 = true;
   }
   countVocab();
@@ -91,16 +87,10 @@ $('#toggle-3').click(function() {
 
 $('#toggle-4').click(function() {
   if (hsk4 == true) {
-    $('#toggle-4').addClass('disabled');
-    $('#toggle-4 .fa').removeClass('fa-check');
-    $('#toggle-4 .fa').addClass('fa-times');
-    $('.item.hsk4').addClass('hide');
+    hideHSKLevel(4);
     hsk4 = false;
   } else {
-    $('#toggle-4').removeClass('disabled');
-    $('#toggle-4 .fa').removeClass('fa-times');
-    $('#toggle-4 .fa').addClass('fa-check');
-    $('.item.hsk4').removeClass('hide');
+    showHSKLevel(4);
     hsk4 = true;
   }
   countVocab();
@@ -108,16 +98,10 @@ $('#toggle-4').click(function() {
 
 $('#toggle-5').click(function() {
   if (hsk5 == true) {
-    $('#toggle-5').addClass('disabled');
-    $('#toggle-5 .fa').removeClass('fa-check');
-    $('#toggle-5 .fa').addClass('fa-times');
-    $('.item.hsk5').addClass('hide');
+    hideHSKLevel(5);
     hsk5 = false;
   } else {
-    $('#toggle-5').removeClass('disabled');
-    $('#toggle-5 .fa').removeClass('fa-times');
-    $('#toggle-5 .fa').addClass('fa-check');
-    $('.item.hsk5').removeClass('hide');
+    showHSKLevel(5);
     hsk5 = true;
   }
   countVocab();
@@ -125,16 +109,10 @@ $('#toggle-5').click(function() {
 
 $('#toggle-6').click(function() {
   if (hsk6 == true) {
-    $('#toggle-6').addClass('disabled');
-    $('#toggle-6 .fa').removeClass('fa-check');
-    $('#toggle-6 .fa').addClass('fa-times');
-    $('.item.hsk6').addClass('hide');
+    hideHSKLevel(6);
     hsk6 = false;
   } else {
-    $('#toggle-6').removeClass('disabled');
-    $('#toggle-6 .fa').removeClass('fa-times');
-    $('#toggle-6 .fa').addClass('fa-check');
-    $('.item.hsk6').removeClass('hide');
+    showHSKLevel(6);
     hsk6 = true;
   }
   countVocab();
@@ -142,17 +120,32 @@ $('#toggle-6').click(function() {
 
 $('#toggle-0').click(function() {
   if (hsk0 == true) {
-    $('#toggle-0').addClass('disabled');
-    $('#toggle-0 .fa').removeClass('fa-check');
-    $('#toggle-0 .fa').addClass('fa-times');
-    $('.item.hsk∞').addClass('hide');
+    hideHSKLevel(0);
     hsk0 = false;
   } else {
-    $('#toggle-0').removeClass('disabled');
-    $('#toggle-0 .fa').removeClass('fa-times');
-    $('#toggle-0 .fa').addClass('fa-check');
-    $('.item.hsk∞').removeClass('hide');
+    showHSKLevel(0);
     hsk0 = true;
   }
   countVocab();
+})
+
+show_chars = true;
+$('#toggle-chars').click(function() {
+  console.log('toggle chars');
+
+  if (show_chars == true) {
+    $('.vocab .word').addClass('hide');
+    $('.vocab .trad').addClass('hide');
+    $('#toggle-chars').addClass('disabled');
+    $('#toggle-chars .fa').removeClass('fa-check');
+    $('#toggle-chars .fa').addClass('fa-times');
+    show_chars = false;
+  } else {
+    $('.vocab .word').removeClass('hide');
+    $('.vocab .trad').removeClass('hide');
+    $('#toggle-chars').removeClass('disabled');
+    $('#toggle-chars .fa').removeClass('fa-times');
+    $('#toggle-chars .fa').addClass('fa-check');
+    show_chars = true;
+  }
 })

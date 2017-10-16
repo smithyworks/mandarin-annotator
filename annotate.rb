@@ -148,19 +148,22 @@ class Annotator
     list << "<div class=\"vocab\">"
 
     list << '<div class="b">Vocabulary (<span id="vocab-count"></span> items)</div>'
-    list << '<span id="toggle-1" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 1</span>'
-    list << '<span id="toggle-2" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 2</span>'
-    list << '<span id="toggle-3" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 3</span>'
-    list << '<span id="toggle-4" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 4</span>'
-    list << '<span id="toggle-5" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 5</span>'
-    list << '<span id="toggle-6" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 6</span>'
-    list << '<span id="toggle-0" class="hsk-toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK &infin;</span>'
+    list << '<div class="hsk-toggles">'
+    list << '<span id="toggle-1" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 1</span>'
+    list << '<span id="toggle-2" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 2</span>'
+    list << '<span id="toggle-3" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 3</span>'
+    list << '<span id="toggle-4" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 4</span>'
+    list << '<span id="toggle-5" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 5</span>'
+    list << '<span id="toggle-6" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 6</span>'
+    list << '<span id="toggle-0" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK &infin;</span>'
+    list << '</div>'
+    list << '<div class="controls"><span id="toggle-chars" class="toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i> Characters</span></div>'
 
     @vocab.each do |word|
       entries = @dict.entries(word)
       entries_strings = entries.map{|e| "<div class=\"entry\"><span class=\"trad\">[#{e[:trad]}]</span> <span class=\"pinyin\">#{e[:pinyin]}</span> <span class=\"defi\">#{e[:defi].join('; ')}</span></div>"}
 
-      hsk = entries.first[:hsk]
+      hsk = entries.first[:hsk] == "∞" ? 0 : entries.first[:hsk]
       list << "<div class=\"item hsk#{hsk}\"><div class=\"word\">#{word} <h4>[HSK #{hsk}]</h4></div>#{entries_strings.join('')}</div>"
     end
 
