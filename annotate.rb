@@ -99,7 +99,7 @@ class Annotator
   end
 
   def htmlBegin
-    '<html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"><link rel="stylesheet" href="bootstrap.min.css"><link rel="stylesheet" type="text/css" href="style.css"><link rel="stylesheet" type="text/css" href="font-awesome-4.7.0/css/font-awesome.min.css"></head><body><a href="/">Home</a>'
+    '<html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"><link rel="stylesheet" href="bootstrap.min.css"><link rel="stylesheet" type="text/css" href="style.css"><link rel="stylesheet" type="text/css" href="font-awesome-4.7.0/css/font-awesome.min.css"></head><body>'
   end
 
   def htmlEnd

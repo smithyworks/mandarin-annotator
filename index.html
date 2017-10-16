@@ -1,7 +1,72 @@
 <html>
 <head>
+  <style>
+body, html { height: 100%; width: 100%; border: 0; padding: 0; margin: 0; background-color: black; }
+#container {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('pic.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.section {
+  flex: 1;
+  margin: 20px;
+  border: 1px solid lightgrey;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  padding: 0px 20px 20px 20px;
+  margin: 0;
+}
+
+* {
+  color: white;
+  font-family: Georgia, "KaiTi", "楷体", STKaiti, "华文楷体";
+}
+
+a {
+  font-size: 22px;
+  display: block;
+  padding: 5px;
+  text-decoration: none;
+}
+  </style>
 </head>
 <body>
-  <a href="out/culture 3 - lesson 3.txt.html">中国文化（三） - 中国的地理与资源</a>
+  <div id="container">
+    <div class="row">
+      <div class="section">
+        <h1>中国文化（一）</h1>
+        <a href="out/culture 1 - lesson 1.txt.html">1 - 中国人为什么穿唐装?</a>
+        <a href="out/culture 1 - lesson 2.txt.html">2 - 旗袍为什么受欢迎？</a>
+      </div>
+      <div class="section">
+        <h1>中国文化（三）</h1>
+        <a href="out/culture 3 - lesson 1.txt.html">1 - 国旗 - 国徽 - 国歌</a>
+        <a href="out/culture 3 - lesson 3.txt.html">3 - 中国的地理与资源</a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="section">
+        <h1>高级汉语</h1>
+      </div>
+      <div class="section">
+        <h1>中级汉语</h1>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
