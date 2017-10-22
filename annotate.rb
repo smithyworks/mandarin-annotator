@@ -4,8 +4,9 @@ require_relative 'lib/converter/pinyin_tone_converter.rb'
 class HSK
 
   def initialize(hsk_files)
-    @hsk = {}
+    puts "Loading hsk files: #{hsk_files.join(', ')}..."
 
+    @hsk = {}
     (1..6).each do |level|
       @hsk[level] = []
 
@@ -31,7 +32,7 @@ class HSK
       4
     elsif @hsk[5].include?(word) or (word.length == 1 and @hsk[5].any?{|i| i.include?(word)})
       5
-    elsif @hsk[6].include?(word) or (word.length == 1 and @hsk[6].any?{|i| i.include?(word)}) 
+    elsif @hsk[6].include?(word) or (word.length == 1 and @hsk[6].any?{|i| i.include?(word)})
       6
     else
       "∞"
@@ -45,6 +46,7 @@ class Dictionary
     hsk = HSK.new(["data/hsk1.txt", "data/hsk2.txt", "data/hsk3.txt", "data/hsk4.txt", "data/hsk5.txt", "data/hsk6.txt"])
 
     puts "Loading dictionary file: #{file}..."
+
     @dict = {}
     File.open(file, "r") do |d|
       while line = d.gets
@@ -57,8 +59,15 @@ class Dictionary
 
         pinyin_raw = line.match(/\[[a-zA-Z0-9[:punct:] ]*?\]/).to_s
         pinyin = PinyinToneConverter.number_to_utf8(pinyin_raw[1..-2])
+
         defi_raw = line.match(/\/.*\//).to_s
+        defi_raw.gsub!(/\[[a-zA-Z0-9[:punct:] ]*?\]/) do |pinyin|
+          "[#{PinyinToneConverter.number_to_utf8(pinyin)}]"
+        end
         defi = defi_raw[1..-2].split("/")
+        defi.each do |d|
+          d.gsub!(/\p{Han}/){|han| "<span class=\"han\">#{han}</span><i class=\"hide fa fa-square-o\" aria-hidden=\"true\"></i>"}
+        end
 
         hsk_level = hsk.getLevel(simp)
 
@@ -127,7 +136,7 @@ class Annotator
 
       "<span class=\"simplified\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"hover\" data-delay=\"300\" data-placement=\"bottom\" data-content=\"#{definitionList.join('')}\">#{word}</span>"
     else
-      if word.length > 1
+      if word.length > 1 and word.match(/\p{Han}/)
         puts "Splitting #{word}..."
 
         html = []
@@ -157,7 +166,10 @@ class Annotator
     list << '<span id="toggle-6" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK 6</span>'
     list << '<span id="toggle-0" class="hsk-toggle toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i></span> HSK &infin;</span>'
     list << '</div>'
-    list << '<div class="controls"><span id="toggle-chars" class="toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i> Characters</span></div>'
+    list << '<div class="controls"><span id="toggle-chars" class="toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i> Characters</span></span>'
+    list << '<span id="toggle-pinyin" class="toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i> Pinyin</span></span>'
+    list << '<span id="toggle-defi" class="toggle"><span class="check-cross"><i class="fa fa-check" aria-hidden="true"></i> Definition</span></span>'
+    list << '</div>'
 
     @vocab.each do |word|
       entries = @dict.entries(word)

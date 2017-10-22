@@ -1,5 +1,5 @@
-$(function () {$('[data-toggle="tooltip"]').tooltip()})
-$(function () {$('[data-toggle="popover"]').popover()})
+$(function () {$('[data-toggle="tooltip"]').tooltip()});
+$(function () {$('[data-toggle="popover"]').popover()});
 
 hsk1 = true;
 hsk2 = true;
@@ -61,7 +61,7 @@ $('#toggle-1').click(function() {
     hsk1 = true;
   }
   countVocab();
-})
+});
 
 $('#toggle-2').click(function() {
   if (hsk2 == true) {
@@ -72,7 +72,7 @@ $('#toggle-2').click(function() {
     hsk2 = true;
   }
   countVocab();
-})
+});
 
 $('#toggle-3').click(function() {
   if (hsk3 == true) {
@@ -83,7 +83,7 @@ $('#toggle-3').click(function() {
     hsk3 = true;
   }
   countVocab();
-})
+});
 
 $('#toggle-4').click(function() {
   if (hsk4 == true) {
@@ -94,7 +94,7 @@ $('#toggle-4').click(function() {
     hsk4 = true;
   }
   countVocab();
-})
+});
 
 $('#toggle-5').click(function() {
   if (hsk5 == true) {
@@ -105,7 +105,7 @@ $('#toggle-5').click(function() {
     hsk5 = true;
   }
   countVocab();
-})
+});
 
 $('#toggle-6').click(function() {
   if (hsk6 == true) {
@@ -116,7 +116,7 @@ $('#toggle-6').click(function() {
     hsk6 = true;
   }
   countVocab();
-})
+});
 
 $('#toggle-0').click(function() {
   if (hsk0 == true) {
@@ -127,18 +127,18 @@ $('#toggle-0').click(function() {
     hsk0 = true;
   }
   countVocab();
-})
+});
 
 show_chars = true;
 $('#toggle-chars').click(function() {
-  console.log('toggle chars');
-
   if (show_chars == true) {
     $('.vocab .word').addClass('hide');
     $('.vocab .trad').addClass('hide');
     $('#toggle-chars').addClass('disabled');
     $('#toggle-chars .fa').removeClass('fa-check');
     $('#toggle-chars .fa').addClass('fa-times');
+    $('.item .han').addClass('hide');
+    $('.item .fa-square-o').removeClass('hide');
     show_chars = false;
   } else {
     $('.vocab .word').removeClass('hide');
@@ -146,6 +146,44 @@ $('#toggle-chars').click(function() {
     $('#toggle-chars').removeClass('disabled');
     $('#toggle-chars .fa').removeClass('fa-times');
     $('#toggle-chars .fa').addClass('fa-check');
+    $('.item .han').removeClass('hide');
+    $('.item .fa-square-o').addClass('hide');
     show_chars = true;
   }
-})
+});
+
+show_pinyin = true;
+$('#toggle-pinyin').click(function() {
+  if (show_pinyin == true) {
+    $('.vocab .pinyin').addClass('hide');
+    $('#toggle-pinyin').addClass('disabled');
+    $('#toggle-pinyin .fa').removeClass('fa-check');
+    $('#toggle-pinyin .fa').addClass('fa-times');
+    show_pinyin = false;
+  } else {
+    $('.vocab .pinyin').removeClass('hide');
+    $('#toggle-pinyin').removeClass('disabled');
+    $('#toggle-pinyin .fa').removeClass('fa-times');
+    $('#toggle-pinyin .fa').addClass('fa-check');
+    show_pinyin = true;
+  }
+});
+
+show_defi = true;
+$('#toggle-defi').click(function() {
+  if (show_defi == true) {
+    $('.vocab .defi').addClass('hide');
+    $('#toggle-defi').addClass('disabled');
+    $('#toggle-defi .fa').removeClass('fa-check');
+    $('#toggle-defi .fa').addClass('fa-times');
+    $('.vocab .entry').addClass('inline');
+    show_defi = false;
+  } else {
+    $('.vocab .defi').removeClass('hide');
+    $('#toggle-defi').removeClass('disabled');
+    $('#toggle-defi .fa').removeClass('fa-times');
+    $('#toggle-defi .fa').addClass('fa-check');
+    $('.vocab .entry').removeClass('inline');
+    show_defi = true;
+  }
+});
