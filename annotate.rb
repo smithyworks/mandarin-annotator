@@ -95,7 +95,7 @@ class Dictionary
   end
 
   def entries(word)
-    @dict[word.length][word].reverse rescue nil
+    @dict[word.length][word] rescue nil
   end
 
 end
@@ -120,7 +120,7 @@ class Annotator
     pinyin = entry[:pinyin]
     definitions = entry[:defi].map{|i| "<li>#{i}</li>"}.join('').gsub('"', '')
 
-    "<h5>#{word} | #{trad}</h5><h6>#{pinyin}</h6><ul>#{definitions}</ul>"
+    "<h5>#{word} | #{trad}</h5><h6>[#{pinyin}]</h6><ul>#{definitions}</ul>"
   end
 
   def wordToHtml(word)

@@ -45,6 +45,11 @@ span.simplified:hover {
   background-color: lightgrey;
 }
 
+body .popover {
+  min-width: 200px;
+  max-width: 450px;
+}
+
 .popover-header, .popover-header * {
   font-size: 24px;
 }
@@ -55,9 +60,10 @@ span.simplified:hover {
 .popover-body * {
   font-size: 18px;
 }
-.popover-body h5 { font-size: 28px; background-color: lightgrey; padding: 10px; }
-.popover-body h6 { font-style: italic; padding: 0 10px 5px 10px; }
-.popover-body ul { padding: 0 10px 5px 35px; }
+.popover-body h5 { font-size: 28px; background-color: lightgrey; padding: 10px; text-align: center;}
+.popover-body h6 { font-style: italic; padding: 5px 10px 5px 10px; margin: 0; }
+.popover-body ul { padding: 0 10px 10px 35px; margin: 0; }
+.popover-body li { padding: 0; margin: 0; }
 
 .vocab {
   padding-top: 50px;
