@@ -1,0 +1,30 @@
+{
+  "name": "mandarin-annotator",
+  "version": "0.1.0",
+  "description": "Annotates foreign-language texts for an easier learning experience",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wattzhikang/mandarin-annotator.git"
+  },
+  "author": "Christopher Smith, Zachariah Watt",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/wattzhikang/mandarin-annotator/issues"
+  },
+  "homepage": "https://github.com/wattzhikang/mandarin-annotator#readme",
+  "devDependencies": {
+    "electron": "^9.1.0"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.4.4",
+    "jquery": "^3.5.1"
+  }
+}
