@@ -1,5 +1,43 @@
+window.$ = window.jQuery = require("jquery");
+
+require("bootstrap");
+
 $(function () {$('[data-toggle="tooltip"]').tooltip()});
 $(function () {$('[data-toggle="popover"]').popover()});
+
+const database = {
+  "中文": {characters: "中文", pinyin: "zhongwen", definitions: ["the Chinese language"]},
+  "很": {characters: "很", pinyin: "hen", definitions: ["very", "is (with adjectives)"]},
+  "好": {characters: "好", pinyin: "hao", definitions: ["good", "nice"]},
+  "这": {characters: "这", pinyin: "zhe", definitions: ["this"]},
+  "是": {characters: "是", pinyin: "shi", definitions: ["to be"]},
+  "一": {characters: "一", pinyin: "yi", definitions: ["one"]},
+  "句": {characters: "句", pinyin: "ju", definitions: ["classifier for sentences and phrases"]},
+  "话": {characters: "话", pinyin: "hua", definitions: ["speech"]}
+}
+
+$(function () {$('[data-toggle="popover"]').hover(
+  function(event) {
+    let word = database[event.target.textContent];
+    $(event.target).attr(
+      "data-content",
+      "<h5>" + word.characters + "</h5>" + 
+      "<h6>" + word.pinyin + "</h6>" +
+      "<ul>" +
+      (function(defs) {
+        let list = "";
+        for (let def of defs) {
+          list += "<li>";
+          list += def;
+          list += "</li>";
+        }
+        return list;
+      })(word.definitions) +
+      "</ul>"
+    );
+    $(event.target).popover('update');
+  });
+});
 
 hsk1 = true;
 hsk2 = true;
