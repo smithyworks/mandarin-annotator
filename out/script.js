@@ -1,10 +1,12 @@
+const { data } = require("jquery");
+
 window.$ = window.jQuery = require("jquery");
 
 require("bootstrap");
 
 $(function () {$('[data-toggle="tooltip"]').tooltip()});
-$(function () {$('[data-toggle="popover"]').popover()});
 
+//a placeholder for the actual definition database
 const database = {
   "中文": {characters: "中文", pinyin: "zhongwen", definitions: ["the Chinese language"]},
   "很": {characters: "很", pinyin: "hen", definitions: ["very", "is (with adjectives)"]},
@@ -16,28 +18,142 @@ const database = {
   "话": {characters: "话", pinyin: "hua", definitions: ["speech"]}
 }
 
-$(function () {$('[data-toggle="popover"]').hover(
-  function(event) {
-    let word = database[event.target.textContent];
-    $(event.target).attr(
-      "data-content",
-      "<h5>" + word.characters + "</h5>" + 
-      "<h6>" + word.pinyin + "</h6>" +
-      "<ul>" +
-      (function(defs) {
-        let list = "";
-        for (let def of defs) {
-          list += "<li>";
-          list += def;
-          list += "</li>";
-        }
-        return list;
-      })(word.definitions) +
-      "</ul>"
-    );
-    $(event.target).popover('update');
+/*
+  This object allows word spans to control the contents of their own popover elements.
+  It also allows them to change their own boundaries
+*/
+function spanMachine(element) {
+  "use strict";
+
+  this.element = element;
+
+  this.editMode = false;
+
+  this.getDefinition = function() {
+    //TODO: handle unknown definitions
+    let word = database[element.textContent];
+    let popContent = "";
+    popContent += "<h5>" + word.characters + "</h5>";
+    popContent += "<h6>" + word.pinyin + "</h6>";
+    popContent += "<ul>";
+    for (let def of word.definitions) {
+      popContent += "<li>";
+      popContent += def;
+      popContent += "</li>";
+    }
+    popContent += "</ul>";
+    return popContent;
+  }
+
+  this.expandLeft  = function()  {
+    let expandTo = $(this.element).prev()[0]; //TODO: handle case of no earlier element
+    let expansionChars = expandTo.innerHTML;
+    if (expansionChars.length <= 1) {
+      //if there was only one character, remove the empty element
+      this.element.parentNode.removeChild(expandTo);
+    } else {
+      //strip the last character out of previous node
+      expandTo.innerHTML = expansionChars.substr(0,expansionChars.length-1);
+    }
+    
+    //add to beginning of this span
+    this.element.innerHTML = expansionChars.charAt(expansionChars.length-1) + this.element.innerHTML;
+  }
+
+  this.expandRight = function() {
+    let expandTo = $(this.element).next()[0]; //TODO: handle case of no later element
+    let expansionChars = expandTo.innerHTML;
+    if (expansionChars.length <= 1) {
+      //if there was only one character, remove the empty element
+      this.element.parentNode.removeChild(expandTo);
+    } else {
+      //strip the first character out of next node
+      expandTo.innerHTML = expansionChars.substr(1);
+    }
+    
+    //add to beginning of this span
+    this.element.innerHTML = this.element.innerHTML + expansionChars.charAt(0);
+  }
+
+  this.toggleEditMode = function() {
+    $(this.element).popover('dispose');
+    if (this.editMode == true) {
+      //regular word popup
+      this.popup();
+      this.editMode = false;
+    } else {
+      //whitelist button elements for the sanitizer (it's a Bootstrap thing)
+      let nWhiteList = $.fn.tooltip.Constructor.Default.whiteList;
+      nWhiteList.button = [];
+
+      //create regular popover, but with buttons
+      $(this.element).popover({
+        content: this.getDefinition() + '<div><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button></div>',
+        delay: 0,
+        html: true,
+        placement: "bottom",
+        trigger: "manual",
+        whiteList: nWhiteList
+      });
+      $(this.element).popover('show');
+
+      //add the appropriate listeners to the buttons
+      //TODO: ensure that no more than one edit popover can be open at a time
+      $("#expandLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
+      $("#expandLeft").click(function(event) {
+        $(event.target)[0].parentSpan.spanComputer.expandLeft();
+      });
+      $("#expandRight")[0].parentSpan = this.element;
+      $("#expandRight").click(function(event) {
+        $(event.target)[0].parentSpan.spanComputer.expandRight();
+      });
+
+      this.editMode = true;
+    }
+  }
+
+  this.popup = function() {
+    $(this.element).popover({
+      content: this.getDefinition(),
+      delay: 300,
+      html: true,
+      placement: "bottom",
+      trigger: "manual"
+    });
+    $(this.element).popover('show');
+  }
+
+  this.popdown = function() {
+    if (!this.editMode) {
+      $(this.element).popover('dispose');
+    }
+  }
+  return this;
+}
+
+//add a spanComputer to each element
+$(function () {
+  $('[data-toggle="popover"]').each( function(index, element) {
+    element.spanComputer = new spanMachine(element);
   });
 });
+
+//add appropriate listeners to control spanComputer events
+$(function () {$('[data-toggle="popover"]').mouseenter(
+  function(event) {
+    event.target.spanComputer.popup();
+  });
+});
+$(function () {$('[data-toggle="popover"').click(
+    function(event) {
+      event.target.spanComputer.toggleEditMode();
+  });
+});
+$(function(){$('[data-toggle="popover').mouseleave(
+  function(event) {
+    event.target.spanComputer.popdown();
+  }
+)})
 
 hsk1 = true;
 hsk2 = true;
