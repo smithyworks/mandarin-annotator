@@ -61,6 +61,7 @@ function spanMachine(element) {
     
     //add to beginning of this span
     this.element.innerHTML = expansionChars.charAt(expansionChars.length-1) + this.element.innerHTML;
+    $(this.element).popover('update'); //reposition popover
   }
 
   this.expandRight = function() {
@@ -76,6 +77,7 @@ function spanMachine(element) {
     
     //add to beginning of this span
     this.element.innerHTML = this.element.innerHTML + expansionChars.charAt(0);
+    $(this.element).popover('update'); //reposition popover
   }
 
   this.toggleEditMode = function() {
