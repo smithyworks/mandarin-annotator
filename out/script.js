@@ -118,6 +118,7 @@ function spanMachine(element) {
   }
 
   this.popup = function() {
+    $(this.element).css("background-color", "lightgray");
     $(this.element).popover({
       content: this.getDefinition(),
       delay: 300,
@@ -131,6 +132,7 @@ function spanMachine(element) {
   this.popdown = function() {
     if (!this.editMode) {
       $(this.element).popover('dispose');
+      $(this.element).css("background-color", "");
     }
   }
   return this;
