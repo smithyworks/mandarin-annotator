@@ -1,10 +1,7 @@
-Prepare for commit:
-- comments
-
 next commit:
 - handle unknown definition
+- make word stay highlighted when in edit mode
 - reposition popup
-- make sure that only one word can be edited at a time
 
 - definition editing
 

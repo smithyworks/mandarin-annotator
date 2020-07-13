@@ -18,6 +18,9 @@ const database = {
   "话": {characters: "话", pinyin: "hua", definitions: ["speech"]}
 }
 
+//a global variable indicating whether or not any popover anywhere in the document is in edit mode
+var anyEditMode = false;
+
 /*
   This object allows word spans to control the contents of their own popover elements.
   It also allows them to change their own boundaries
@@ -77,11 +80,7 @@ function spanMachine(element) {
 
   this.toggleEditMode = function() {
     $(this.element).popover('dispose');
-    if (this.editMode == true) {
-      //regular word popup
-      this.popup();
-      this.editMode = false;
-    } else {
+    if (!this.editMode && !anyEditMode) { //if not in edit mode, and no one else in edit mode
       //whitelist button elements for the sanitizer (it's a Bootstrap thing)
       let nWhiteList = $.fn.tooltip.Constructor.Default.whiteList;
       nWhiteList.button = [];
@@ -108,7 +107,13 @@ function spanMachine(element) {
         $(event.target)[0].parentSpan.spanComputer.expandRight();
       });
 
+      anyEditMode = true;
       this.editMode = true;
+    } else if (this.editMode) { //else in edit mode
+      //regular word popup
+      this.popup();
+      this.editMode = false;
+      anyEditMode = false;
     }
   }
 
