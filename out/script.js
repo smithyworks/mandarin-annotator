@@ -4,18 +4,20 @@ window.$ = window.jQuery = require("jquery");
 
 require("bootstrap");
 
+var converter = require('pinyin-tone-converter');
+
 $(function () {$('[data-toggle="tooltip"]').tooltip()});
 
 //a placeholder for the actual definition database
 const database = {
-  "中文": {characters: "中文", pinyin: "zhongwen", definitions: ["the Chinese language"]},
-  "很": {characters: "很", pinyin: "hen", definitions: ["very", "is (with adjectives)"]},
-  "好": {characters: "好", pinyin: "hao", definitions: ["good", "nice"]},
-  "这": {characters: "这", pinyin: "zhe", definitions: ["this"]},
-  "是": {characters: "是", pinyin: "shi", definitions: ["to be"]},
-  "一": {characters: "一", pinyin: "yi", definitions: ["one"]},
-  "句": {characters: "句", pinyin: "ju", definitions: ["classifier for sentences and phrases"]},
-  "话": {characters: "话", pinyin: "hua", definitions: ["speech"]}
+  "中文": {characters: "中文", pinyin: "zhong1wen2", definitions: ["the Chinese language"]},
+  "很": {characters: "很", pinyin: "hen3", definitions: ["very", "is (with adjectives)"]},
+  "好": {characters: "好", pinyin: "hao3", definitions: ["good", "nice"]},
+  "这": {characters: "这", pinyin: "zhe4", definitions: ["this"]},
+  "是": {characters: "是", pinyin: "shi4", definitions: ["to be"]},
+  "一": {characters: "一", pinyin: "yi1", definitions: ["one"]},
+  "句": {characters: "句", pinyin: "ju4", definitions: ["classifier for sentences and phrases"]},
+  "话": {characters: "话", pinyin: "hua4", definitions: ["speech"]}
 }
 
 //whitelist button elements for the sanitizer (it's a Bootstrap thing)
@@ -37,12 +39,12 @@ function spanMachine(element) {
 
   this.editMode = false;
 
-  this.getDefinition = function(tagSet) {
+  this.getDefinition = function(tagSet, prettyPinyin) {
     let popContent = "";
     let word = database[element.textContent];
     if (word != undefined) {
       popContent += "<h5>" + word.characters + "</h5>";
-      popContent += tagSet.pinyin[0] + word.pinyin + tagSet.pinyin[1];
+      popContent += tagSet.pinyin[0] + ((prettyPinyin) ? converter.convertPinyinTones(word.pinyin) : word.pinyin) + tagSet.pinyin[1];
       popContent += "<ul>";
       for (let def of word.definitions) {
         popContent += tagSet.definition[0] + def + tagSet.definition[1];
@@ -73,7 +75,7 @@ function spanMachine(element) {
 
     //create regular popover, but with buttons
     $(this.element).popover({
-      content: this.getDefinition(tagSet),
+      content: this.getDefinition(tagSet, false),
       delay: 0,
       html: true,
       placement: "bottom",
@@ -270,7 +272,7 @@ function spanMachine(element) {
     };
     $(this.element).css("background-color", "lightgray");
     $(this.element).popover({
-      content: this.getDefinition(tagSet),
+      content: this.getDefinition(tagSet, true),
       delay: 300,
       html: true,
       placement: "bottom",

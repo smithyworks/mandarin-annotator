@@ -1,6 +1,3 @@
-- definition editing
-- pinyin tones
-
 - design and pick actual database system
 
 - bug: mouseenter should not refresh popup when in edit mode
