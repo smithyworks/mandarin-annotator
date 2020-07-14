@@ -1,12 +1,10 @@
-Prepare for commit:
-- reposition popup
-
-next commit:
-- handle unknown definition
+- update the popover upon expansion
 
 - definition editing
 
 - design and pick actual database system
+
+- create "break off left"/"break off right" buttons
 
 - import and segment text files (with option for files with paragraphs broken by lines)
 - save .seg files

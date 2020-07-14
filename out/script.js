@@ -33,19 +33,52 @@ function spanMachine(element) {
   this.editMode = false;
 
   this.getDefinition = function() {
-    //TODO: handle unknown definitions
-    let word = database[element.textContent];
     let popContent = "";
-    popContent += "<h5>" + word.characters + "</h5>";
-    popContent += "<h6>" + word.pinyin + "</h6>";
-    popContent += "<ul>";
-    for (let def of word.definitions) {
-      popContent += "<li>";
-      popContent += def;
-      popContent += "</li>";
+    let word = database[element.textContent];
+    if (word != undefined) {
+      popContent += "<h5>" + word.characters + "</h5>";
+      popContent += "<h6>" + word.pinyin + "</h6>";
+      popContent += "<ul>";
+      for (let def of word.definitions) {
+        popContent += "<li>";
+        popContent += def;
+        popContent += "</li>";
+      }
+      popContent += "</ul>";
+    } else {
+      popContent += "<h5>Unknown|非知</h5>";
+      popContent += "<h6>There is no entry in the<br/>dictionary for this string</h6>";
     }
-    popContent += "</ul>";
     return popContent;
+  }
+
+  this._createEditPopover = function() {
+    //whitelist button elements for the sanitizer (it's a Bootstrap thing)
+    let nWhiteList = $.fn.tooltip.Constructor.Default.whiteList;
+    nWhiteList.button = [];
+
+    $(this.element).popover('dispose');
+
+    //create regular popover, but with buttons
+    $(this.element).popover({
+      content: this.getDefinition() + '<div><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button></div>',
+      delay: 0,
+      html: true,
+      placement: "bottom",
+      trigger: "manual",
+      whiteList: nWhiteList
+    });
+    $(this.element).popover('show');
+
+    //add the appropriate listeners to the buttons
+    $("#expandLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
+    $("#expandLeft").click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.expandLeft();
+    });
+    $("#expandRight")[0].parentSpan = this.element;
+    $("#expandRight").click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.expandRight();
+    });
   }
 
   this.expandLeft  = function()  {
@@ -61,7 +94,7 @@ function spanMachine(element) {
     
     //add to beginning of this span
     this.element.innerHTML = expansionChars.charAt(expansionChars.length-1) + this.element.innerHTML;
-    $(this.element).popover('update'); //reposition popover
+    this._createEditPopover();
   }
 
   this.expandRight = function() {
@@ -77,41 +110,17 @@ function spanMachine(element) {
     
     //add to beginning of this span
     this.element.innerHTML = this.element.innerHTML + expansionChars.charAt(0);
-    $(this.element).popover('update'); //reposition popover
+    this._createEditPopover();
   }
 
   this.toggleEditMode = function() {
-    $(this.element).popover('dispose');
     if (!this.editMode && !anyEditMode) { //if not in edit mode, and no one else in edit mode
-      //whitelist button elements for the sanitizer (it's a Bootstrap thing)
-      let nWhiteList = $.fn.tooltip.Constructor.Default.whiteList;
-      nWhiteList.button = [];
-
-      //create regular popover, but with buttons
-      $(this.element).popover({
-        content: this.getDefinition() + '<div><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button></div>',
-        delay: 0,
-        html: true,
-        placement: "bottom",
-        trigger: "manual",
-        whiteList: nWhiteList
-      });
-      $(this.element).popover('show');
-
-      //add the appropriate listeners to the buttons
-      //TODO: ensure that no more than one edit popover can be open at a time
-      $("#expandLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
-      $("#expandLeft").click(function(event) {
-        $(event.target)[0].parentSpan.spanComputer.expandLeft();
-      });
-      $("#expandRight")[0].parentSpan = this.element;
-      $("#expandRight").click(function(event) {
-        $(event.target)[0].parentSpan.spanComputer.expandRight();
-      });
+      this._createEditPopover();
 
       anyEditMode = true;
       this.editMode = true;
     } else if (this.editMode) { //else in edit mode
+      $(this.element).popover('dispose');
       //regular word popup
       this.popup();
       this.editMode = false;
