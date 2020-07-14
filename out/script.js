@@ -61,7 +61,7 @@ function spanMachine(element) {
 
     //create regular popover, but with buttons
     $(this.element).popover({
-      content: this.getDefinition() + '<div><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button></div>',
+      content: this.getDefinition() + '<div><button type="button" id="breakLeft" class="btn">o</button><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button><button type="button" id="breakRight" class="btn">o</button></div>',
       delay: 0,
       html: true,
       placement: "bottom",
@@ -71,6 +71,10 @@ function spanMachine(element) {
     $(this.element).popover('show');
 
     //add the appropriate listeners to the buttons
+    $("#breakLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
+    $("#breakLeft").click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.breakLeft();
+    });
     $("#expandLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
     $("#expandLeft").click(function(event) {
       $(event.target)[0].parentSpan.spanComputer.expandLeft();
@@ -79,6 +83,54 @@ function spanMachine(element) {
     $("#expandRight").click(function(event) {
       $(event.target)[0].parentSpan.spanComputer.expandRight();
     });
+    $("#breakRight")[0].parentSpan = this.element;
+    $("#breakRight").click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.breakRight();
+    });
+  }
+
+  this.breakLeft = function() {
+    if (this.element.innerHTML.length > 1) {
+      $(this.element).before('<span class="simplified" data-toggle="popover">' + this.element.innerHTML.charAt(0) + '</span>');
+      $(this.element).prev().each( function(index, element) {
+        element.spanComputer = new spanMachine(element);
+      });
+      $(this.element).prev().mouseenter(function(event) {
+        event.target.spanComputer.popup();
+      });
+      $(this.element).prev().click(function(event) {
+        event.target.spanComputer.toggleEditMode();
+      });
+      $(this.element).prev().mouseleave(function(event) {
+        event.target.spanComputer.popdown();
+      })
+
+      this.element.innerHTML = this.element.innerHTML.substr(1);
+      this._createEditPopover();
+    }
+  }
+
+  this.breakRight = function() {
+    if (this.element.innerHTML.length > 1) {
+      let len = this.element.innerHTML.length;
+
+      $(this.element).after('<span class="simplified" data-toggle="popover">' + this.element.innerHTML.charAt(len-1) + '</span>');
+      $(this.element).next().each( function(index, element) {
+        element.spanComputer = new spanMachine(element);
+      });
+      $(this.element).next().mouseenter(function(event) {
+        event.target.spanComputer.popup();
+      });
+      $(this.element).next().click(function(event) {
+        event.target.spanComputer.toggleEditMode();
+      });
+      $(this.element).next().mouseleave(function(event) {
+        event.target.spanComputer.popdown();
+      })
+
+      this.element.innerHTML = this.element.innerHTML.substr(0,len-1);
+      this._createEditPopover();
+    }
   }
 
   this.expandLeft  = function()  {
