@@ -18,6 +18,11 @@ const database = {
   "话": {characters: "话", pinyin: "hua", definitions: ["speech"]}
 }
 
+//whitelist button elements for the sanitizer (it's a Bootstrap thing)
+let nWhiteList = $.fn.tooltip.Constructor.Default.whiteList;
+nWhiteList.button = ["type"];
+nWhiteList.input = ["value", "type"];
+
 //a global variable indicating whether or not any popover anywhere in the document is in edit mode
 var anyEditMode = false;
 
@@ -32,36 +37,43 @@ function spanMachine(element) {
 
   this.editMode = false;
 
-  this.getDefinition = function() {
+  this.getDefinition = function(tagSet) {
     let popContent = "";
     let word = database[element.textContent];
     if (word != undefined) {
       popContent += "<h5>" + word.characters + "</h5>";
-      popContent += "<h6>" + word.pinyin + "</h6>";
+      popContent += tagSet.pinyin[0] + word.pinyin + tagSet.pinyin[1];
       popContent += "<ul>";
       for (let def of word.definitions) {
-        popContent += "<li>";
-        popContent += def;
-        popContent += "</li>";
+        popContent += tagSet.definition[0] + def + tagSet.definition[1];
       }
       popContent += "</ul>";
     } else {
-      popContent += "<h5>Unknown|非知</h5>";
+      //TODO: create edit mode of this popover
+      popContent += "<h5>" + this.element.innerHTML + "</h5>";
       popContent += "<h6>There is no entry in the<br/>dictionary for this string</h6>";
+    }
+    if (tagSet.editTags != undefined) {
+      popContent += tagSet.editTags;
     }
     return popContent;
   }
 
   this._createEditPopover = function() {
-    //whitelist button elements for the sanitizer (it's a Bootstrap thing)
-    let nWhiteList = $.fn.tooltip.Constructor.Default.whiteList;
-    nWhiteList.button = [];
-
     $(this.element).popover('dispose');
+
+    let cancelSave = '<div><button type="button" id="cancel" class="btn">Cancel</button><button type="button" id="save" class="btn">Save</button></div>';
+    let addDef = '<div><button type="button" id="addDef" class="btn">Add Definition</button></div>'
+    let expanders = '<div><button type="button" id="breakLeft" class="btn">o</button><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button><button type="button" id="breakRight" class="btn">o</button></div>'
+    let tagSet = {
+      pinyin: ['<input id="pinyin" type="text" value="', '"/>'],
+      definition: ['<input class="defInput" type="text" value="', '"/><button type="button" class="btn removeDef">-</button>'],
+      editTags: addDef + cancelSave + expanders
+    };
 
     //create regular popover, but with buttons
     $(this.element).popover({
-      content: this.getDefinition() + '<div><button type="button" id="breakLeft" class="btn">o</button><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button><button type="button" id="breakRight" class="btn">o</button></div>',
+      content: this.getDefinition(tagSet),
       delay: 0,
       html: true,
       placement: "bottom",
@@ -71,6 +83,23 @@ function spanMachine(element) {
     $(this.element).popover('show');
 
     //add the appropriate listeners to the buttons
+    $(".removeDef").prop("parentSpan", this.element);
+    $(".removeDef").click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.removeDef($(event.target).prev().prop("value"));
+    });
+    $("#addDef").prop("parentSpan", this.element);
+    $("#addDef").click(function(event) {
+      //      button                                                 button     div      ul
+      $(event.target).prop("parentSpan").spanComputer.addDef($(event.target.parentNode).prev());
+    });
+    $("#cancel")[0].parentSpan = this.element;
+    $("#cancel").click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.cancel();
+    });
+    $("#save")[0].parentSpan = this.element;
+    $("#save").click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.save();
+    });
     $("#breakLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
     $("#breakLeft").click(function(event) {
       $(event.target)[0].parentSpan.spanComputer.breakLeft();
@@ -87,6 +116,60 @@ function spanMachine(element) {
     $("#breakRight").click(function(event) {
       $(event.target)[0].parentSpan.spanComputer.breakRight();
     });
+  }
+
+  this.removeDef = function(definition) {
+    //just remove the definition (if any) from the database and redraw the popover
+    database[this.element.innerHTML].definitions =
+      database[this.element.innerHTML].definitions.filter(function (value, index, arr) {
+        return value !== definition;
+      })
+    ;
+    console.log(definition);
+    this._createEditPopover();
+  }
+
+  this.addDef = function(ul) {
+    //create dom elements, configure them, and add to the dom
+    let newLI = document.createElement("li");
+
+    let newInput = document.createElement("input");
+    $(newInput).addClass("defInput")
+    newInput.type = "text";
+
+    let newButton = document.createElement('button');
+    newButton.type = "button";
+    $(newButton).addClass("btn removeDef");
+    newButton.innerHTML = "-";
+    $(newButton).prop("parentSpan", this.element);
+    $(newButton).click(function(event) {
+      $(event.target)[0].parentSpan.spanComputer.removeDef($(event.target).prev().prop("value"));
+    });
+
+    newLI.appendChild(newInput);
+    newLI.appendChild(newButton);
+
+    ul.append(newLI);
+  }
+
+  this.cancel = function() {
+    //just redraw the popover. it will revert to whatever has been already saved to the database
+    this._createEditPopover();
+  }
+
+  this.save = function() {
+    let defs = []; //first gather all the definitions
+    $(".defInput").each(function(index, element) {
+      if (element.value !== "") {
+        defs.push(element.value);
+      }
+    });
+    database[this.element.innerHTML] = { //replace entry based in current textbox information
+      characters: this.element.innerHTML,
+      pinyin: $("#pinyin").prop("value"),
+      definitions: defs
+    };
+    this._createEditPopover();
   }
 
   this.breakLeft = function() {
@@ -181,13 +264,18 @@ function spanMachine(element) {
   }
 
   this.popup = function() {
+    let tagSet = {
+      pinyin: ['<h6>', '</h6>'],
+      definition: ['<li>', '</li>']
+    };
     $(this.element).css("background-color", "lightgray");
     $(this.element).popover({
-      content: this.getDefinition(),
+      content: this.getDefinition(tagSet),
       delay: 300,
       html: true,
       placement: "bottom",
-      trigger: "manual"
+      trigger: "manual",
+      whiteList: nWhiteList
     });
     $(this.element).popover('show');
   }

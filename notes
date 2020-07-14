@@ -1,6 +1,9 @@
 - definition editing
+- pinyin tones
 
 - design and pick actual database system
+
+- bug: mouseenter should not refresh popup when in edit mode
 
 - import and segment text files (with option for files with paragraphs broken by lines)
 - save .seg files
