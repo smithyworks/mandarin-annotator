@@ -21,9 +21,11 @@
   },
   "homepage": "https://github.com/wattzhikang/mandarin-annotator#readme",
   "devDependencies": {
-    "electron": "^9.1.0"
+    "electron": "^9.1.0",
+    "electron-rebuild": "^1.11.0"
   },
   "dependencies": {
+    "better-sqlite3": "^7.1.0",
     "bootstrap": "^4.5.0",
     "jquery": "^3.5.1",
     "pinyin-tone-converter": "^1.0.0",
