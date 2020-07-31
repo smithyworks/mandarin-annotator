@@ -15,26 +15,6 @@ module.exports = class Dictionary {
         //create a SQLite database in memory
         this.db = new Database('./data/dictionary.db');
         try {
-            // // create the dictionary table
-            // this.db.prepare(
-            //     'CREATE TABLE entries' +
-            //     '(' +
-            //     'id INTEGER PRIMARY KEY,' +
-            //     'simpChars TEXT,' +
-            //     'tradChars TEXT,' +
-            //     'pinyin TEXT,' +
-            //     'UNIQUE(simpChars,tradChars,pinyin)' +
-            //     ');'
-            // ).run();
-            // //create the definitions table
-            // this.db.prepare(
-            //     'CREATE TABLE definitions' +
-            //     '(' +
-            //     'dicid INTEGER,' +
-            //     'definition TEXT,' +
-            //     'FOREIGN KEY(dicid) REFERENCES entries(id)' +
-            //     ');'
-            // ).run();
             console.log('Database initialized');
 
             this.#insEntries = this.db.prepare(
@@ -54,11 +34,11 @@ module.exports = class Dictionary {
             );
             this.#selEntriesSimpHead = this.db.prepare(
                 'SELECT * FROM entries WHERE ' +
-                'simpChars=? ;'
+                'simpChars=? ORDER BY custom DESC;'
             );
             this.#selEntriesTradHead = this.db.prepare(
                 'SELECT * FROM entries WHERE ' +
-                'tradChars=? ;'
+                'tradChars=? ORDER BY custom DESC;'
             );
             this.#selDefinitions = this.db.prepare(
                 'SELECT * FROM definitions WHERE dicid=? ;'
@@ -69,52 +49,30 @@ module.exports = class Dictionary {
         }
     }
 
-    addData(file) {
-        //read the file line by line
-        let readInterface = readline.createInterface({
-            input: fs.createReadStream(file),
-            console: true
-        });
-        //insert each line into the database
-        readInterface.on('line', (line) => {
-            //this code was adapted from cpsmith's annotate.rb
-            //it was translated from the original Ruby
-            
-            line = line.trim();
-
-            if (line == '' || line[0] == '#') {
-                return;
-            }
-
-            let tokens = line.split(' ');
-
-            let tradChars = tokens[0];
-            let simpChars = tokens[1];
-            let pinyin = line.match(/(?<=\[)[^\/]*(?=\])/)[0];
-
-            let definitions = line.match(/(?<=\/).*(?=\/)/)[0].split('/');
-
-            try {
-                this.#insEntries.run(tradChars, simpChars, pinyin);
-
-                //get the id of the word we are about to define
-                let dicid = this.#selIDEntriesFull.get(tradChars, simpChars, pinyin).id;
-                //be sure to drop all existing definitions for the word first
-                this.#delDefinitions.run(dicid);
-                //INSERT all definitions of the word
-                for (let definition of definitions) {
-                    this.#insDefinitions.run(dicid,definition);
+    applyLayerModel(entries) {
+        let filteredEntries = [...entries];
+        for (let entry of entries) {
+            filteredEntries = filteredEntries.filter(tstEntry => {
+                if (
+                    tstEntry.simpChars != entry.simpChars ||
+                    tstEntry.tradChars != entry.tradChars ||
+                    tstEntry.pinyin    != entry.pinyin
+                ) {
+                    //if the entries do not match, they are not
+                    //unique, and layering does not apply
+                    return true;
                 }
-            } catch (err) {
-                console.error(err);
-            }
-        });
-    }
 
-    addDatas(fileList) {
-        for (let file of fileList) {
-            this.addData(file.path);
+                //if they are unique, eliminate the entry in the
+                //lower layer
+                if (tstEntry.custom < entry.custom) {
+                    return false;
+                }
+
+                return true;
+            });
         }
+        return filteredEntries;
     }
 
     //return an array of definition objects
@@ -125,6 +83,8 @@ module.exports = class Dictionary {
         } else {
             entries = this.#selEntriesTradHead.all(headword);
         }
+
+        entries = this.applyLayerModel(entries);
 
         let self = this;
 
