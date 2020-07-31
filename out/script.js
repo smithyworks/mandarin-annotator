@@ -6,10 +6,12 @@ require("bootstrap");
 
 var converter = require('pinyin-tone-converter');
 
+let Dictionary = require("../dictionary");
+
 $(function () {$('[data-toggle="tooltip"]').tooltip()});
 
 //a placeholder for the actual definition database
-const database = {
+const tmpDatabase = {
   "中文": {characters: "中文", pinyin: "zhong1wen2", definitions: ["the Chinese language"]},
   "很": {characters: "很", pinyin: "hen3", definitions: ["very", "is (with adjectives)"]},
   "好": {characters: "好", pinyin: "hao3", definitions: ["good", "nice"]},
@@ -19,6 +21,9 @@ const database = {
   "句": {characters: "句", pinyin: "ju4", definitions: ["classifier for sentences and phrases"]},
   "话": {characters: "话", pinyin: "hua4", definitions: ["speech"]}
 }
+
+//load the actual database
+var database = new Dictionary();
 
 //whitelist button elements for the sanitizer (it's a Bootstrap thing)
 let nWhiteList = $.fn.tooltip.Constructor.Default.whiteList;
@@ -41,15 +46,17 @@ function spanMachine(element) {
 
   this.getDefinition = function(tagSet, prettyPinyin) {
     let popContent = "";
-    let word = database[element.textContent];
-    if (word != undefined) {
-      popContent += "<h5>" + word.characters + "</h5>";
-      popContent += tagSet.pinyin[0] + ((prettyPinyin) ? converter.convertPinyinTones(word.pinyin) : word.pinyin) + tagSet.pinyin[1];
-      popContent += "<ul>";
-      for (let def of word.definitions) {
-        popContent += tagSet.definition[0] + def + tagSet.definition[1];
+    let words = database.getDefinitions(element.textContent, true);
+    if (words.length > 0) {
+      for (const word of words) {
+        popContent += "<h5>" + word.tradChars + '|' + word.simpChars + "</h5>";
+        popContent += tagSet.pinyin[0] + ((prettyPinyin) ? converter.convertPinyinTones(word.pinyin) : word.pinyin) + tagSet.pinyin[1];
+        popContent += "<ul>";
+        for (let def of word.definitions) {
+          popContent += tagSet.definition[0] + def + tagSet.definition[1];
+        }
+        popContent += "</ul>";        
       }
-      popContent += "</ul>";
     } else {
       //TODO: create edit mode of this popover
       popContent += "<h5>" + this.element.innerHTML + "</h5>";
@@ -122,8 +129,8 @@ function spanMachine(element) {
 
   this.removeDef = function(definition) {
     //just remove the definition (if any) from the database and redraw the popover
-    database[this.element.innerHTML].definitions =
-      database[this.element.innerHTML].definitions.filter(function (value, index, arr) {
+    tmpDatabase[this.element.innerHTML].definitions =
+      tmpDatabase[this.element.innerHTML].definitions.filter(function (value, index, arr) {
         return value !== definition;
       })
     ;
@@ -166,7 +173,7 @@ function spanMachine(element) {
         defs.push(element.value);
       }
     });
-    database[this.element.innerHTML] = { //replace entry based in current textbox information
+    tmpDatabase[this.element.innerHTML] = { //replace entry based in current textbox information
       characters: this.element.innerHTML,
       pinyin: $("#pinyin").prop("value"),
       definitions: defs
