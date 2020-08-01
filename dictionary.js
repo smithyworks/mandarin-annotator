@@ -61,15 +61,13 @@ module.exports = class Dictionary {
                     //if the entries do not match, they are not
                     //unique, and layering does not apply
                     return true;
-                }
-
-                //if they are unique, eliminate the entry in the
-                //lower layer
-                if (tstEntry.custom < entry.custom) {
+                } else if (tstEntry.custom < entry.custom) {
+                    //if they are unique, eliminate the entry in the
+                    //lower layer
                     return false;
+                } else {
+                    return true;
                 }
-
-                return true;
             });
         }
         return filteredEntries;
