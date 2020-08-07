@@ -176,6 +176,7 @@ function spanMachine(element) {
       pinyin: $("#pinyin").prop("value"),
       definitions: defs
     };
+    $(this.element).popover('dispose');
     this._createEditPopover();
   }
 
