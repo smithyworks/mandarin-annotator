@@ -69,8 +69,6 @@ function spanMachine(element) {
   }
 
   this._createEditPopover = function() {
-    $(this.element).popover('dispose');
-
     let cancelSave = '<div><button type="button" id="cancel" class="btn">Cancel</button><button type="button" id="save" class="btn">Save</button></div>';
     let addDef = '<div><button type="button" id="addDef" class="btn">Add Definition</button></div>'
     let expanders = '<div><button type="button" id="breakLeft" class="btn">o</button><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button><button type="button" id="breakRight" class="btn">o</button></div>'
@@ -258,13 +256,12 @@ function spanMachine(element) {
   }
 
   this.toggleEditMode = function() {
+    $(this.element).popover('dispose');
     if (!this.editMode && !anyEditMode) { //if not in edit mode, and no one else in edit mode
       this._createEditPopover();
-
       anyEditMode = true;
       this.editMode = true;
     } else if (this.editMode) { //else in edit mode
-      $(this.element).popover('dispose');
       //regular word popup
       this.popup();
       this.editMode = false;
