@@ -8,6 +8,8 @@ var converter = require('pinyin-tone-converter');
 
 let Dictionary = require("../dictionary");
 
+const DictLevel = require("../databaseLevel");
+
 $(function () {$('[data-toggle="tooltip"]').tooltip()});
 
 //a placeholder for the actual definition database
@@ -44,45 +46,39 @@ function spanMachine(element) {
 
   this.editMode = false;
 
-  this.getDefinition = function(tagSet, prettyPinyin) {
+  this._createEditPopover = function() {
+    $(this.element).popover('dispose');
+
     let popContent = "";
     let words = database.getDefinitions(element.textContent, true);
     if (words.length > 0) {
       for (const word of words) {
+        popContent += '<div class="entry">';
         popContent += "<h5>" + word.tradChars + '|' + word.simpChars + "</h5>";
-        popContent += tagSet.pinyin[0] + ((prettyPinyin) ? converter.convertPinyinTones(word.pinyin) : word.pinyin) + tagSet.pinyin[1];
+        popContent += '<input class="pinyin" type="text" value="' + converter.convertPinyinTones(word.pinyin) + '"/>';
         popContent += "<ul>";
         for (let def of word.definitions) {
-          popContent += tagSet.definition[0] + def + tagSet.definition[1];
+          popContent += '<li><input class="defInput" type="text" value="' + def + '"/>';
+          popContent += '<button type="button" class="btn removeDef">-</button></li>';
         }
-        popContent += "</ul>";        
+        popContent += '<li><button type="button" class="btn addDef">Add Definition</button></li>'
+        popContent += "</ul>";
+        popContent += '</div>';
       }
+      popContent += '<div><button type="button" id="cancel" class="btn">Cancel</button>';
+      popContent += '<button type="button" id="save" class="btn">Save</button></div>';
+      popContent += '<div><button type="button" id="breakLeft" class="btn">o</button>';
+      popContent += '<button type="button" id="expandLeft" class="btn">&lt;</button>';
+      popContent += '<button id="expandRight" type="button" class="btn">&gt;</button>';
+      popContent += '<button type="button" id="breakRight" class="btn">o</button></div>';
     } else {
       //TODO: create edit mode of this popover
       popContent += "<h5>" + this.element.innerHTML + "</h5>";
       popContent += "<h6>There is no entry in the<br/>dictionary for this string</h6>";
     }
-    if (tagSet.editTags != undefined) {
-      popContent += tagSet.editTags;
-    }
-    return popContent;
-  }
 
-  this._createEditPopover = function() {
-    $(this.element).popover('dispose');
-
-    let cancelSave = '<div><button type="button" id="cancel" class="btn">Cancel</button><button type="button" id="save" class="btn">Save</button></div>';
-    let addDef = '<div><button type="button" id="addDef" class="btn">Add Definition</button></div>'
-    let expanders = '<div><button type="button" id="breakLeft" class="btn">o</button><button type="button" id="expandLeft" class="btn">&lt;</button><button id="expandRight" type="button" class="btn">&gt;</button><button type="button" id="breakRight" class="btn">o</button></div>'
-    let tagSet = {
-      pinyin: ['<input id="pinyin" type="text" value="', '"/>'],
-      definition: ['<input class="defInput" type="text" value="', '"/><button type="button" class="btn removeDef">-</button>'],
-      editTags: addDef + cancelSave + expanders
-    };
-
-    //create regular popover, but with buttons
     $(this.element).popover({
-      content: this.getDefinition(tagSet, false),
+      content: popContent,
       delay: 0,
       html: true,
       placement: "bottom",
@@ -92,26 +88,30 @@ function spanMachine(element) {
     $(this.element).popover('show');
 
     //add the appropriate listeners to the buttons
-    $(".removeDef").prop("parentSpan", this.element);
+
     $(".removeDef").click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.removeDef($(event.target).prev().prop("value"));
+      $(event.target.parentNode).remove();
     });
-    $("#addDef").prop("parentSpan", this.element);
-    $("#addDef").click(function(event) {
-      //      button                                                 button     div      ul
-      $(event.target).prop("parentSpan").spanComputer.addDef($(event.target.parentNode).prev());
+
+    $(".addDef").prop("parentSpan", this.element); //addDef needs access to the parent span
+    $(".addDef").click(function(event) {
+      //      button                                               button     li         li
+      $(event.target).prop("parentSpan").spanComputer.addDef(event.target.parentNode.parentNode);
     });
-    $("#cancel")[0].parentSpan = this.element;
+
+    $("#cancel").prop('parentSpan', this.element);
     $("#cancel").click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.cancel();
+      $(event.target).prop('parentSpan').spanComputer.cancel();
     });
-    $("#save")[0].parentSpan = this.element;
-    $("#save").click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.save();
-    });
-    $("#breakLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
+
+    // $("#save")[0].parentSpan = this.element;
+    // $("#save").click(function(event) {
+    //   $(event.target)[0].parentSpan.spanComputer.save();
+    // });
+
+    $("#breakLeft").prop('parentSpan', this.element); //add needed reference to the span this button controls
     $("#breakLeft").click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.breakLeft();
+      $(event.target).prop('parentSpan').spanComputer.breakLeft();
     });
     $("#expandLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
     $("#expandLeft").click(function(event) {
@@ -127,19 +127,9 @@ function spanMachine(element) {
     });
   }
 
-  this.removeDef = function(definition) {
-    //just remove the definition (if any) from the database and redraw the popover
-    tmpDatabase[this.element.innerHTML].definitions =
-      tmpDatabase[this.element.innerHTML].definitions.filter(function (value, index, arr) {
-        return value !== definition;
-      })
-    ;
-    console.log(definition);
-    this._createEditPopover();
-  }
-
   this.addDef = function(ul) {
     //create dom elements, configure them, and add to the dom
+
     let newLI = document.createElement("li");
 
     let newInput = document.createElement("input");
@@ -152,13 +142,13 @@ function spanMachine(element) {
     newButton.innerHTML = "-";
     $(newButton).prop("parentSpan", this.element);
     $(newButton).click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.removeDef($(event.target).prev().prop("value"));
+      $(event.target.parentNode).remove();
     });
 
     newLI.appendChild(newInput);
     newLI.appendChild(newButton);
 
-    ul.append(newLI);
+    $(ul).find('.addDef').before(newLI);
   }
 
   this.cancel = function() {
@@ -174,10 +164,18 @@ function spanMachine(element) {
       }
     });
     tmpDatabase[this.element.innerHTML] = { //replace entry based in current textbox information
-      characters: this.element.innerHTML,
+
+      simpChars: this.element.innerHTML,
       pinyin: $("#pinyin").prop("value"),
       definitions: defs
     };
+    //MAJOR PROBLEM!!! Multiple entries per word
+    database.save(
+      this.element.innerHTML,
+      $("#pinyin").prop("value"),
+      defs,
+      DictLevel.SCRATCH
+    )
     this._createEditPopover();
   }
 
@@ -273,13 +271,26 @@ function spanMachine(element) {
   }
 
   this.popup = function() {
-    let tagSet = {
-      pinyin: ['<h6>', '</h6>'],
-      definition: ['<li>', '</li>']
-    };
+    let popContent = "";
+    let words = database.getDefinitions(element.textContent, true);
+    if (words.length > 0) {
+      for (const word of words) {
+        popContent += "<h5>" + word.tradChars + '|' + word.simpChars + "</h5>";
+        popContent += "<h6>" + converter.convertPinyinTones(word.pinyin) + "</h6>";
+        popContent += "<ul>";
+        for (let def of word.definitions) {
+          popContent += "<li>" + def + "</li>";
+        }
+        popContent += "</ul>";        
+      }
+    } else {
+      popContent += "<h5>" + this.element.innerHTML + "</h5>";
+      popContent += "<h6>There is no entry in the<br/>dictionary for this string</h6>";
+    }
+
     $(this.element).css("background-color", "lightgray");
     $(this.element).popover({
-      content: this.getDefinition(tagSet, true),
+      content: popContent,
       delay: 300,
       html: true,
       placement: "bottom",
