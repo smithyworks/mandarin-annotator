@@ -2,10 +2,13 @@ const fs = require('fs');
 const Database = require('better-sqlite3');
 const readline = require('readline');
 
+const DictLevel = require("./databaseLevel");
+
 module.exports = class Dictionary {
-    #insEntries;            //insert an entry into the dictionary (needs simplified and traditional headword and pinyin)
+    #repEntries;            //insert an entry into the dictionary (needs simplified and traditional headword and pinyin)
     #insDefinitions;        //insert a definition that corresponds to an id of an entry
-    #selIDEntriesFull;      //get the id of the entry that matches the traditional and simplified headword AND the pinyin
+    #selEntriesFull;      //get the id of the entry that matches the traditional and simplified headword AND the pinyin
+    #selEntriesEverything; //get an entry using all specifications
     #selEntriesSimpHead;    //get all entry records matching the simplified character headword
     #selEntriesTradHead;    //get all entry records matching the traditional character headword
     #selDefinitions;        //get all entry records matching the id of the entry they belong to
@@ -17,9 +20,9 @@ module.exports = class Dictionary {
         try {
             console.log('Database initialized');
 
-            this.#insEntries = this.db.prepare(
-                "INSERT INTO entries (tradChars,simpChars,pinyin) " +
-                "VALUES (?, ?, ?);"
+            this.#repEntries = this.db.prepare(
+                "REPLACE INTO entries (tradChars,simpChars,pinyin,custom) " +
+                "VALUES (?, ?, ?, ?);"
             );
             this.#insDefinitions = this.db.prepare(
                 "INSERT INTO definitions (dicid,definition) " +
@@ -28,9 +31,13 @@ module.exports = class Dictionary {
             this.#delDefinitions = this.db.prepare(
                 "DELETE FROM definitions WHERE dicid=? ;"
             );
-            this.#selIDEntriesFull = this.db.prepare(
-                "SELECT id FROM entries WHERE " +
-                "tradChars=? AND simpChars=? AND pinyin=?;"
+            this.#selEntriesFull = this.db.prepare(
+                "SELECT * FROM entries WHERE " +
+                "tradChars=? AND simpChars=? AND pinyin=? ORDER BY custom DESC;"
+            );
+            this.#selEntriesEverything = this.db.prepare(
+                "SELECT * FROM entries WHERE " +
+                "tradChars=? AND simpChars=? AND pinyin=? AND custom=?;"
             );
             this.#selEntriesSimpHead = this.db.prepare(
                 'SELECT * FROM entries WHERE ' +
@@ -104,6 +111,33 @@ module.exports = class Dictionary {
         });
 
         return entries;
+    }
+
+    save(tradChars, simpChars, pinyin, defs, level) {
+        if (level === DictLevel.CORE) {
+            return; //do not modify the core dictionary
+        }
+
+        console.log(tradChars);
+        console.log(simpChars);
+        console.log(pinyin);
+        console.log(defs);
+        console.log(level);
+
+        //delete associated definitions if they exist
+        let oldEntry = this.#selEntriesEverything.get(tradChars, simpChars, pinyin, level);
+        if (oldEntry !== undefined) {
+            this.#delDefinitions.run(oldEntry.id);
+        }
+
+        this.#repEntries.run(tradChars, simpChars, pinyin, level);
+
+        let id = this.applyLayerModel(this.#selEntriesFull.all(tradChars, simpChars, pinyin))[0].id;
+        console.log(id);
+        this.#delDefinitions.run(id);
+        for (let def of defs) {
+            this.#insDefinitions.run(id, def);
+        }
     }
 
     close() {

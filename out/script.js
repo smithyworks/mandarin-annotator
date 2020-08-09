@@ -53,9 +53,9 @@ function spanMachine(element) {
     let words = database.getDefinitions(element.textContent, true);
     if (words.length > 0) {
       for (const word of words) {
-        popContent += '<div class="entry">';
-        popContent += "<h5>" + word.tradChars + '|' + word.simpChars + "</h5>";
-        popContent += '<input class="pinyin" type="text" value="' + converter.convertPinyinTones(word.pinyin) + '"/>';
+        popContent += '<div class="entry" tradChars="' + word.tradChars + '" simpChars="' + word.simpChars + '">';
+        popContent += '<h5><span class="tradChars">' + word.tradChars + '</span>|<span class="simpChars">' + word.simpChars + "</span></h5>";
+        popContent += '<input class="pinyin" type="text" value="' + word.pinyin + '"/>';
         popContent += "<ul>";
         for (let def of word.definitions) {
           popContent += '<li><input class="defInput" type="text" value="' + def + '"/>';
@@ -104,26 +104,26 @@ function spanMachine(element) {
       $(event.target).prop('parentSpan').spanComputer.cancel();
     });
 
-    // $("#save")[0].parentSpan = this.element;
-    // $("#save").click(function(event) {
-    //   $(event.target)[0].parentSpan.spanComputer.save();
-    // });
+    $("#save").prop('parentSpan', this.element);
+    $("#save").click(function(event) {
+      $(event.target).prop('parentSpan').spanComputer.save();
+    });
 
     $("#breakLeft").prop('parentSpan', this.element); //add needed reference to the span this button controls
     $("#breakLeft").click(function(event) {
       $(event.target).prop('parentSpan').spanComputer.breakLeft();
     });
-    $("#expandLeft")[0].parentSpan = this.element; //add needed reference to the span this button controls
+    $("#expandLeft").prop('parentSpan', this.element); //add needed reference to the span this button controls
     $("#expandLeft").click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.expandLeft();
+      $(event.target).prop('parentSpan').spanComputer.expandLeft();
     });
-    $("#expandRight")[0].parentSpan = this.element;
+    $("#expandRight").prop('parentSpan', this.element);
     $("#expandRight").click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.expandRight();
+      $(event.target).prop('parentSpan').spanComputer.expandRight();
     });
-    $("#breakRight")[0].parentSpan = this.element;
+    $("#breakRight").prop('parentSpan', this.element);
     $("#breakRight").click(function(event) {
-      $(event.target)[0].parentSpan.spanComputer.breakRight();
+      $(event.target).prop('parentSpan').spanComputer.breakRight();
     });
   }
 
@@ -157,25 +157,22 @@ function spanMachine(element) {
   }
 
   this.save = function() {
-    let defs = []; //first gather all the definitions
-    $(".defInput").each(function(index, element) {
-      if (element.value !== "") {
-        defs.push(element.value);
-      }
-    });
-    tmpDatabase[this.element.innerHTML] = { //replace entry based in current textbox information
+    let self = this;
+    $('.entry').each(function(index, element) {
+      let defs = [];
+      $(element).find('.defInput').each( (index, def) => {
+        defs.push(def.value);
+      })
 
-      simpChars: this.element.innerHTML,
-      pinyin: $("#pinyin").prop("value"),
-      definitions: defs
-    };
-    //MAJOR PROBLEM!!! Multiple entries per word
-    database.save(
-      this.element.innerHTML,
-      $("#pinyin").prop("value"),
-      defs,
-      DictLevel.SCRATCH
-    )
+      database.save(
+        $(element).find('.tradChars').prop('innerHTML'), //traditional characters
+        $(element).find('.tradChars').prop('innerHTML'), //simplified characters
+        $(element).find('.pinyin').prop('value'),        //pinyin
+        defs,
+        DictLevel.TEXT
+      );
+    });
+
     this._createEditPopover();
   }
 
@@ -306,6 +303,7 @@ function spanMachine(element) {
       $(this.element).css("background-color", "");
     }
   }
+
   return this;
 }
 
