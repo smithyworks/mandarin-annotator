@@ -1,38 +1,51 @@
 'use strict';
 
 let $ = require("jquery");
-require("bootstrap");
-let Dictionary = require("./dictionary");
-const fs = require('fs');
+let fs = require('fs');
+let SpanMachine = require('./SpanMachine');
 
-let dictFileNames = fs.readdirSync("./data/");
+function loadFile(err, data) {
+    //create div for whole text
+    let docDiv = document.createElement('div');
+    docDiv.id = 'chineseText';
 
-//add all built-in datasets as options
-for (let dictFileName of dictFileNames) {
-    $('#selectBuiltIn').append('<option>' + dictFileName + '</option');
+    //add one line at a time
+    //be sure to add the spanMachine to each word span
+    let lines = data.split('\n');
+    for (let line of lines) {
+        line = line.trim().split(' ');
+        if (line.length < 1) {
+            continue;
+        }
+
+        let paragraph = document.createElement('p');
+        if (line[0] === "#") {
+            //make it a heading
+            paragraph.classList.add('a');
+            line.shift();
+        }
+
+        for (let word of line) {
+            let element = document.createElement('span');
+
+            //if it is a chinese character, it should be defined
+            if (/\p{Script=Han}/u.test(word)) {
+                element.classList.add('simplified');
+                new SpanMachine(element);
+            }
+            element.innerHTML = word;
+
+            paragraph.appendChild(element);
+        }
+
+        docDiv.appendChild(paragraph);
+    }
+
+    document.body.appendChild(docDiv);
 }
 
-//reset the file chooser if the user selects a built-in dataset
-$('#selectBuiltIn').click(function(event) {
-    $('#fileChooser').prop("value", "");
-});
-
-//reset the selector if the user chooses a custom dataset
-$('#fileChooser').change(function(event) {
-    $('#selectBuiltIn').prop("selectedIndex", 0);
-});
-
-//add the dataset to the window's database
-$('#loadDict').click(function(event) {
-    //initialize the dictionary database system (TM)
-    if ($('#selectBuiltIn').prop('selectedIndex') != 0) {
-        window.database.addData('./data/' + $('#selectBuiltIn').prop('value'));
-    } else {
-        window.database.addDatas($('#fileChooser').prop('files'));
-    }
-});
-
-window.database = new Dictionary();
-window.addEventListener('close', (event) => {
-    database.close();
+$(function() {
+    $('#loadDict').click(function(event) {
+        fs.readFile($('#fileChooser').prop('files')[0].path, 'utf8', loadFile);
+    });
 });

@@ -3,26 +3,21 @@
     <meta charset="UTR-8">
     <title>Choose a Language</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <script src="index.js"></script>
   </head>
   <body>
     <form>
       <div class="form-group">
-        <label for="selectBuiltIn">Chose a Built-In Dictionary</label>
-        <select id="selectBuiltIn" class="form-control">
-          <option>Custom</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="fileChooser">Choose a Custom Dictionary</label>
+        <label for="fileChooser">Choose a Text</label>
         <div>
           <input id="fileChooser" type="file"/>
         </div>
       </div>
       <div class="form-group">
-        <button id="loadDict" class="btn btn-primary" type="button">Load Dictionary</button>
+        <button id="loadDict" class="btn btn-primary" type="button">Load Text</button>
       </div>
     </form>
-    <script src="index.js"></script>
     <a href="out/test.html">Test</a>
   </body>
 </html>

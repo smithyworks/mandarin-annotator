@@ -6,42 +6,42 @@ span.traditional {
     font-family: Helvetica, Arial, "微软雅黑", "正黑体", SimHei, SimSun, "Pingfang TC","Heiti TC", "LiSong Hei", "Droid Sans Fallback", PMingLiU, MingLiU, "新细明体", "细明体", "WenQuanYi Micro Hei", "文泉驿微米黑", "AR PL UKai TW MBE";
 }*/
 
-body {
-  padding: 100px 200px;
+#chineseText {
+  margin: 100px 200px;
 }
 @media screen and (max-width: 1000px) {
-  body { padding: 10px 10px; }
+  #chineseText { margin: 10px 10px; }
 }
-body * {
+#chineseText * {
   font-family: Georgia;
   font-size: 35px;
 }
 
-body * {
+#chineseText * {
   font-family: Georgia, "Times New Roman", "KaiTi", "楷体", STKaiti, "华文楷体", serif;
 }
-span.simplified {
+#chineseText span.simplified {
   font-size: 35px;
 }
-p.a { text-align: center; }
-p.a, p.a span {
+#chineseText p.a { text-align: center; }
+#chineseText p.a, #chineseText p.a span {
   font-size: 55px;
   font-weight: bold;
 }
-p.b, p.b span {
+#chineseText p.b, #chineseText p.b span {
   font-size: 45px;
   font-weight: bold;
 }
-p.c, p.c span {
+#chineseText p.c, #chineseText p.c span {
   font-size: 40px;
   font-weight: bold;
 }
-p.d, p.d span {
+#chineseText p.d, #chineseText p.d span {
   font-size: 35px;
   font-weight: bold;
 }
 
-span.simplified:hover {
+#chineseText span.simplified:hover {
   background-color: lightgrey;
 }
 
