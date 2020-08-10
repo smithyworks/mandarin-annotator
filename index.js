@@ -46,6 +46,11 @@ function loadFile(err, data) {
 
 $(function() {
     $('#loadDict').click(function(event) {
-        fs.readFile($('#fileChooser').prop('files')[0].path, 'utf8', loadFile);
+        if ($('#chineseText').length < 1) {
+            fs.readFile($('#fileChooser').prop('files')[0].path, 'utf8', loadFile);
+        }
     });
+    $('#closeText').click(function(event) {
+        $('#chineseText').remove();
+    })
 });
