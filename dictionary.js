@@ -15,6 +15,7 @@ module.exports = class Dictionary {
     #delDefinitions;        //delete all definitions that match the id of the entry they belong to
     #selCustomEntries;      //get all entries that exist at a certain level
     #upEntry;               //update an existing entry with a certain id
+    #delEntryLevel;         //delete all entries at a certain level
 
     constructor() {
         //create a SQLite database in memory
@@ -59,7 +60,10 @@ module.exports = class Dictionary {
                 'UPDATE entries ' +
                 'SET tradChars=?, simpChars=?, pinyin=? ' +
                 'WHERE id=?;'
-            )
+            );
+            this.#delEntryLevel = this.db.prepare(
+                'DELETE FROM entries WHERE custom=?;'
+            );
         } catch (err) {
             this.db.close();
             console.error(err.message)
@@ -170,6 +174,10 @@ module.exports = class Dictionary {
         }
 
         return entries;
+    }
+
+    clearTextDefs() {
+        this.#delEntryLevel.run(2);
     }
 
     close() {

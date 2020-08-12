@@ -7,7 +7,62 @@ let Dictionary = require('./dictionary');
 
 var database = new Dictionary();
 
+//load words that exist only in the text
+function loadWords(words) {
+    for (let word of words) {
+        database.save(
+            word.tradChars,
+            word.simpChars,
+            word.pinyin,
+            word.defs,
+            2
+        );
+    }
+}
+
 function loadFile(err, data) {
+    //first read custom definitions
+
+    //if the first non-whitespace character is a '[', then it's a json list
+    if (/^\s*\{/.test(data)) {
+        //apologies for the C-style string parsing
+        let jsonStart = 0;
+        //find the beginning of the text data
+        for (jsonStart = 0; jsonStart < data.length; jsonStart++) {
+            if (data[jsonStart] === '{') {
+                break;
+            }
+        }
+        if (jsonStart == data.length) {
+            console.error('the json string is not valid');
+        }
+
+        let jsonEnd;
+        //find the end of the text data using a stack to match brackets
+        let bracketStack = ['{'];
+        for (jsonEnd = jsonStart + 1; jsonEnd < data.length; jsonEnd++) {
+            if (bracketStack.length === 0) {
+                break;
+            }
+
+            if (data[jsonEnd] === '{') {
+                bracketStack.push(data[jsonEnd]);
+            } else if (data[jsonEnd] === '}') {
+                bracketStack.pop();
+            }
+        }
+        if (jsonEnd == data.length) {
+            console.error('the json string is not valid');
+        }
+
+        let textData = JSON.parse(data.substring(jsonStart, jsonEnd));
+        loadWords(textData.words);
+
+        data = data.substring(jsonEnd, data.length);
+    } else {
+        console.log('json not detected');
+    }
+    
     //create div for whole text
     let docDiv = document.createElement('div');
     docDiv.id = 'chineseText';
@@ -244,6 +299,7 @@ $(function() {
     });
     $('#closeText').click(function(event) {
         $('#chineseText').remove();
+        database.clearTextDefs();
     });
     $('#vocabEditorToggle').click(function(event) {
         createVocabEditor();
