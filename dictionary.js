@@ -13,6 +13,8 @@ module.exports = class Dictionary {
     #selEntriesTradHead;    //get all entry records matching the traditional character headword
     #selDefinitions;        //get all entry records matching the id of the entry they belong to
     #delDefinitions;        //delete all definitions that match the id of the entry they belong to
+    #selCustomEntries;      //get all entries that exist at a certain level
+    #upEntry;               //update an existing entry with a certain id
 
     constructor() {
         //create a SQLite database in memory
@@ -50,6 +52,14 @@ module.exports = class Dictionary {
             this.#selDefinitions = this.db.prepare(
                 'SELECT * FROM definitions WHERE dicid=? ;'
             );
+            this.#selCustomEntries = this.db.prepare(
+                'SELECT * FROM entries WHERE custom=?;'
+            );
+            this.#upEntry = this.db.prepare(
+                'UPDATE entries ' +
+                'SET tradChars=?, simpChars=?, pinyin=? ' +
+                'WHERE id=?;'
+            )
         } catch (err) {
             this.db.close();
             console.error(err.message)
@@ -138,6 +148,28 @@ module.exports = class Dictionary {
         for (let def of defs) {
             this.#insDefinitions.run(id, def);
         }
+
+        return id;
+    }
+
+    updateEntry(id, tradChars, simpChars, pinyin, defs) {
+        this.#upEntry.run(tradChars, simpChars, pinyin, id);
+
+        this.#delDefinitions.run(id);
+        for (let def of defs) {
+            this.#insDefinitions.run(id, def);
+            console.log(id);
+        }
+    }
+
+    getCustomDefs(level) {
+        let entries = this.#selCustomEntries.all(level);
+
+        for (let entry of entries) {
+            entry.defs = this.#selDefinitions.all(entry.id);
+        }
+
+        return entries;
     }
 
     close() {

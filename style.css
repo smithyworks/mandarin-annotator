@@ -6,6 +6,22 @@ span.traditional {
     font-family: Helvetica, Arial, "微软雅黑", "正黑体", SimHei, SimSun, "Pingfang TC","Heiti TC", "LiSong Hei", "Droid Sans Fallback", PMingLiU, MingLiU, "新细明体", "细明体", "WenQuanYi Micro Hei", "文泉驿微米黑", "AR PL UKai TW MBE";
 }*/
 
+#vocabSheet input {
+  width: 75px;
+}
+
+#vocabSheet .pinyinEditor {
+  width: 150px;
+}
+
+#vocabSheet .defList li input {
+  width: 200px;
+}
+
+#vocabSheet .defList li {
+  display: block;
+}
+
 #chineseText {
   margin: 100px 200px;
 }
