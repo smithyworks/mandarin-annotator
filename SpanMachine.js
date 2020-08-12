@@ -170,7 +170,7 @@ module.exports = class SpanMachine {
     if (this.element.innerHTML.length > 1) {
       $(this.element).before('<span class="simplified" data-toggle="popover">' + this.element.innerHTML.charAt(0) + '</span>');
       $(this.element).prev().each( function(index, element) {
-        element.spanComputer = new spanMachine(element);
+        element.spanComputer = new SpanMachine(element);
       });
       $(this.element).prev().mouseenter(function(event) {
         event.target.spanComputer.popup();
@@ -193,7 +193,7 @@ module.exports = class SpanMachine {
 
       $(this.element).after('<span class="simplified" data-toggle="popover">' + this.element.innerHTML.charAt(len-1) + '</span>');
       $(this.element).next().each( function(index, element) {
-        element.spanComputer = new spanMachine(element);
+        element.spanComputer = new SpanMachine(element);
       });
       $(this.element).next().mouseenter(function(event) {
         event.target.spanComputer.popup();
