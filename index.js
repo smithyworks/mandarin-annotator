@@ -81,6 +81,10 @@ function loadFile(err, data) {
             //make it a heading
             paragraph.classList.add('a');
             line.shift();
+        } else if (line[0] === '##') {
+            //smaller heading
+            paragraph.classList.add('b');
+            line.shift();
         }
 
         for (let word of line) {
