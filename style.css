@@ -28,15 +28,17 @@ span.traditional {
 @media screen and (max-width: 1000px) {
   #chineseText { margin: 10px 10px; }
 }
-#chineseText * {
-  font-family: Georgia;
-  font-size: 35px;
+
+@font-face {
+  font-family: "Custom Chinese";
+  src: local("TW-Kai");
 }
 
 #chineseText * {
-  font-family: Georgia, "Times New Roman", "KaiTi", "楷体", STKaiti, "华文楷体", serif;
+  font-family: Georgia, "Times New Roman", "Custom Chinese", "KaiTi", "楷体", STKaiti, "华文楷体", serif;
 }
-#chineseText span.simplified {
+
+#chineseText span {
   font-size: 35px;
 }
 #chineseText p.a { text-align: center; }
@@ -45,7 +47,7 @@ span.traditional {
   font-weight: bold;
 }
 #chineseText p.b, #chineseText p.b span {
-  font-size: 45px;
+  font-size: 35px;
   font-weight: bold;
 }
 #chineseText p.c, #chineseText p.c span {
