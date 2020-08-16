@@ -12,8 +12,6 @@ To change the definition or boundaries of a word, go into edit mode by clicking 
 
 In edit mode, the popover will no longer disappear without hovering over the word. Definitions and pinyin listings will be editable text boxes
 
-Note: Currently, words that are not defined cannot be edited. This will be fixed.
-
 The 'save' button will save your definitions to the database. (Note: Currently, the in-text editor will save custom definitions to the 'persistent' level of the database. This means that the changes will persist after the current text is closed. It also means that changes made in edit mode will NOT override definitions embedded in the input file. This will be fixed.)
 
 The 'cancel' button will reset the edit popover.

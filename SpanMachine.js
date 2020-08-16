@@ -64,7 +64,20 @@ module.exports = class SpanMachine {
     } else {
       //TODO: create edit mode of this popover
       popContent += "<h5>" + this.element.innerHTML + "</h5>";
-      popContent += "<h6>There is no entry in the<br/>dictionary for this string</h6>";
+
+      popContent += '<input class="pinyin" type="text" value=""/>';
+
+      popContent += "<ul>";
+      popContent += '<li><button type="button" class="btn addDef">Add Definition</button></li>'
+      popContent += "</ul>";
+      popContent += '</div>';
+
+      popContent += '<div><button type="button" id="cancel" class="btn">Cancel</button>';
+      popContent += '<button type="button" id="save" class="btn">Save</button></div>';
+      popContent += '<div><button type="button" id="breakLeft" class="btn">o</button>';
+      popContent += '<button type="button" id="expandLeft" class="btn">&lt;</button>';
+      popContent += '<button id="expandRight" type="button" class="btn">&gt;</button>';
+      popContent += '<button type="button" id="breakRight" class="btn">o</button></div>';
     }
 
     $(this.element).popover({
