@@ -1,0 +1,20 @@
+{
+    "charSet": "simplified",
+    "words": [
+        {
+            "tradChars": "張壞人",
+            "simpChars": "张坏人",
+            "pinyin": "zhang1 huai4 ren2",
+            "defs": [
+                "Huairen Zhang (name)",
+                "a generic name for a bad person"
+            ]
+        }
+    ]
+}
+
+# 中文 很 好
+
+这 是 一 句 中文 话 。
+
+这 是 一 个 名字 ： 张坏人 。
